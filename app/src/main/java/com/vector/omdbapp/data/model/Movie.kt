@@ -13,7 +13,10 @@ data class Movie(
     val posterUrl: String,
 
     @SerializedName("imdbID")
-    val imdbID: String
+    val imdbID: String,
+
+    @SerializedName("Type")
+    val type: String,
 )
 
 data class OmdbSearchResponse(

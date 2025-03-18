@@ -3,6 +3,7 @@ package com.vector.omdbapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,8 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,10 +29,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -40,6 +48,36 @@ class MainActivity : ComponentActivity() {
             OmdbAppScreen()
         }
     }
+}
+@Preview
+@Composable
+fun OmdbAppScreenPreview() {
+    OmdbAppScreen()
+}
+
+@Preview
+@Composable
+fun SearchBarPreview() {
+    SearchBar(query = "Movie Title", onQueryChange = {}, onSearchClick = {})
+}
+
+@Preview
+@Composable
+fun MovieListPreview() {
+    MovieList(viewModel = viewModel())
+}
+
+@Preview
+@Composable
+fun MovieItemPreview() {
+    val movie = com.vector.omdbapp.data.model.Movie(
+        title = "Movie 1",
+        year = "2021",
+        imdbID = "12345",
+        posterUrl = "https://www.omdbapi.com/src/poster.jpg",
+        type = "movie"
+    )
+    MovieItem(movie = movie, viewModel = viewModel())
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,7 +94,6 @@ fun OmdbAppScreen(viewModel: MovieViewModel = viewModel()) {
                 onQueryChange = { newQuery -> viewModel.onQueryChange(newQuery) },
                 onSearchClick = { viewModel.searchMovies() }
             )
-
             when {
                 uiState.isLoading -> {
                     Box(
@@ -74,7 +111,7 @@ fun OmdbAppScreen(viewModel: MovieViewModel = viewModel()) {
                     )
                 }
                 else -> {
-                    MovieList(movies = uiState.movies)
+                    MovieList(viewModel)
                 }
             }
         }
@@ -107,30 +144,99 @@ fun SearchBar(
 }
 
 @Composable
-fun MovieList(movies: List<com.vector.omdbapp.data.model.Movie>) {
-    LazyColumn(contentPadding = PaddingValues(8.dp)) {
-        items(movies) { movie ->
-            MovieItem(movie)
+fun MovieList(viewModel: MovieViewModel) {
+    // Collect the UI state from the ViewModel
+    val uiState by viewModel.uiState.collectAsState()
+    // LazyListState keeps track of the scroll position in LazyColumn
+    val listState = rememberLazyListState()
+
+    /**
+     * Scroll detection logic:
+     * - This effect monitors the scrolling state of LazyColumn.
+     * - It uses snapshotFlow to continuously observe the last visible item index.
+     * - If the user scrolls to the last item, it triggers the `loadMoreMovies()` function in the ViewModel.
+     */
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+            .collect { lastVisibleIndex ->
+                if (lastVisibleIndex != null && lastVisibleIndex >= uiState.movies.size - 1) {
+                    viewModel.loadMoreMovies() // Trigger pagination when the last item is reached
+                }
+            }
+    }
+
+    /**
+     * LazyColumn displays the list of movies in a scrollable column.
+     * - `state = listState` ensures we track scroll position.
+     * - `contentPadding` provides space around the edges.
+     * - `verticalArrangement.spacedBy(8.dp)` adds spacing between items.
+     */
+    LazyColumn(
+        state = listState,
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        /**
+         * Display each movie item in the list.
+         * - `items(uiState.movies)` iterates over the movie list.
+         * - Each movie is displayed using the `MovieItem` composable.
+         * - A `Divider()` is added to separate items visually.
+         */
+        items(uiState.movies) { movie ->
+            MovieItem(movie = movie, viewModel = viewModel)
             HorizontalDivider(modifier = Modifier.fillMaxWidth(),thickness = 1.dp)
+        }
+        /**
+         * Display a loading indicator when paginating (fetching more movies).
+         * - This item appears at the bottom when `isPaginating` is `true`.
+         * - It provides a visual cue to users that more data is loading.
+         */
+        if (uiState.isPaginating) {
+            item {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator() // Shows a spinning loader
+                }
+            }
         }
     }
 }
 
 @Composable
-fun MovieItem(movie: com.vector.omdbapp.data.model.Movie) {
-    Row(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-        AsyncImage(
-            model = movie.posterUrl,
-            contentDescription = movie.title,
-            modifier = Modifier.size(80.dp)
-        )
+fun MovieItem(movie: com.vector.omdbapp.data.model.Movie, viewModel: MovieViewModel) {
+    // Get the current label state for the movie
+    val isLabelVisible = viewModel.labelStates[movie.imdbID] ?: false
+    val buttonText = viewModel.getButtonText(movie.imdbID)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
+    ) {
+        Row(modifier = Modifier.weight(1f)) {
+            AsyncImage(
+                model = movie.posterUrl,
+                contentDescription = movie.title,
+                modifier = Modifier.size(80.dp)
+            )
         Spacer(modifier = Modifier.width(8.dp))
-        Column {
-            Text(text = movie.title, style = MaterialTheme.typography.titleSmall)
-            Text(text = "Year: ${movie.year}", style = MaterialTheme.typography.bodyMedium)
-            // 在这里可以添加一个 Button/CheckBox 模拟点击功能
-            // 例如:
-            // Button(onClick = { }) { Text("Select") }
+        Column( modifier = Modifier.weight(1f) ){
+            Text(text = movie.title, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(text = "Year: ${movie.year}", style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            if (isLabelVisible) {
+                AssistChip(
+                    onClick = { /* Do nothing, just for display */ },
+                    label = { Text("Label displayed") }
+                )
+            }
         }
+    }
+        Button(
+            onClick = { viewModel.toggleLabel(movie.imdbID) },
+            modifier = Modifier.wrapContentSize()
+        ) { Text(buttonText) }
     }
 }

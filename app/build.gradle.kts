@@ -69,4 +69,8 @@ dependencies {
 
     // Coil for image loading
     implementation(libs.coil.compose)
+
+    // OKHttp interceptor
+    implementation(libs.okhttp.logging.interceptor)
+
 }

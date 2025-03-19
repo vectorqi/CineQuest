@@ -14,11 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,11 +33,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -219,12 +219,11 @@ fun MovieList(viewModel: MovieViewModel) {
         }
     }
 }
-
 @Composable
 fun MovieItem(movie: com.vector.omdbapp.data.model.Movie, viewModel: MovieViewModel) {
-    // Get the current label state for the movie
     val isLabelVisible = viewModel.labelStates[movie.imdbID] ?: false
     val buttonText = viewModel.getButtonText(movie.imdbID)
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -232,27 +231,81 @@ fun MovieItem(movie: com.vector.omdbapp.data.model.Movie, viewModel: MovieViewMo
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
-        Row(modifier = Modifier.weight(1f)) {
-            AsyncImage(
-                model = movie.posterUrl,
-                contentDescription = movie.title,
-                modifier = Modifier.size(80.dp)
-            )
+        // Provide a placeholder image if the poster is loading or fails
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(movie.posterUrl)
+                .placeholder(R.drawable.loading)
+                .error(R.drawable.error)
+                .build(),
+            contentDescription = movie.title,
+            modifier = Modifier.size(80.dp)
+        )
+
         Spacer(modifier = Modifier.width(8.dp))
-        Column( modifier = Modifier.weight(1f) ){
-            Text(text = movie.title, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(text = "Year: ${movie.year}", style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = movie.title,
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = "Year: ${movie.year}",
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
             if (isLabelVisible) {
-                AssistChip(
-                    onClick = { /* Do nothing, just for display */ },
-                    label = { Text("Label displayed") }
+                Text(
+                    text = "Label displayed",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
-    }
-        Button(
-            onClick = { viewModel.toggleLabel(movie.imdbID) },
-            modifier = Modifier.wrapContentSize()
-        ) { Text(buttonText) }
+
+        Button(onClick = { viewModel.toggleLabel(movie.imdbID) }) {
+            Text(buttonText)
+        }
     }
 }
+
+//@Composable
+//fun MovieItem(movie: com.vector.omdbapp.data.model.Movie, viewModel: MovieViewModel) {
+//    // Get the current label state for the movie
+//    val isLabelVisible = viewModel.labelStates[movie.imdbID] ?: false
+//    val buttonText = viewModel.getButtonText(movie.imdbID)
+//    Row(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(8.dp),
+//        horizontalArrangement = Arrangement.SpaceBetween,
+//        verticalAlignment = Alignment.Top
+//    ) {
+//        Row(modifier = Modifier.weight(1f)) {
+//            AsyncImage(
+//                model = movie.posterUrl,
+//                contentDescription = movie.title,
+//                modifier = Modifier.size(80.dp)
+//            )
+//        Spacer(modifier = Modifier.width(8.dp))
+//        Column( modifier = Modifier.weight(1f) ){
+//            Text(text = movie.title, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+//            Text(text = "Year: ${movie.year}", style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+//            if (isLabelVisible) {
+//                AssistChip(
+//                    onClick = { /* Do nothing, just for display */ },
+//                    label = { Text("Label displayed") }
+//                )
+//            }
+//        }
+//    }
+//        Button(
+//            onClick = { viewModel.toggleLabel(movie.imdbID) },
+//            modifier = Modifier.wrapContentSize()
+//        ) { Text(buttonText) }
+//    }
+//}

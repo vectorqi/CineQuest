@@ -11,86 +11,99 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * Data class representing the UI state for the movie list.
+ * Represents the UI state, including movies, query text, and
+ * status flags for loading, pagination, etc.
  *
- * @param query The search query entered by the user.
- * @param movies The list of movies retrieved from the API.
- * @param errorMessage Error message if the API request fails.
- * @param isLoading Indicates whether the initial movie search is in progress.
- * @param isPaginating Indicates whether additional movies are being loaded for pagination.
+ * @param query Current search keyword.
+ * @param movies The current list of displayed movies.
+ * @param errorMessage Error message for any failed requests.
+ * @param isLoading Indicates the initial (main) loading is in progress.
+ * @param isPaginating Indicates if a subsequent "load more" request is in progress.
+ * @param noMoreData True when we've loaded all possible data.
+ * @param totalResults Number of total hits reported by OMDB.
  */
 data class MovieUiState(
     val query: String = "",
     val movies: List<Movie> = emptyList(),
     val errorMessage: String? = null,
     val isLoading: Boolean = false,
-    val isPaginating: Boolean = false
+    val isPaginating: Boolean = false,
+    val noMoreData: Boolean = false,  // Prevents further loading after final page
+    val totalResults: Int = 0
 )
+
 /**
- * ViewModel responsible for managing movie-related UI state and business logic.
- * It handles searching movies, maintaining label visibility, and implementing pagination.
+ * ViewModel manages the search, pagination, and label states.
  */
 class MovieViewModel : ViewModel() {
     private val repository = MovieRepository()
-    // StateFlow to hold the UI state, ensuring UI updates reactively.
+
     private val _uiState = MutableStateFlow(MovieUiState())
-    // Publicly exposed immutable StateFlow for UI observation.
     val uiState: StateFlow<MovieUiState> = _uiState
-    // MutableStateMap to maintain label visibility states for each movie.
+
     private val _labelStates = mutableStateMapOf<String, Boolean>()
-    // Publicly exposed immutable map for UI observation.
     val labelStates: Map<String, Boolean> get() = _labelStates
-    // Pagination state variables
-    private var currentPage = 1  // Tracks the current page number for pagination
-    private var isLoadingPage = false // Prevents duplicate requests when loading more movies
+
+    private var currentPage = 1        // Tracks which page we are currently loading
+    private var isLoadingPage = false  // Prevents duplicate requests
 
     /**
-     * Toggles the visibility of the label for a given movie.
-     *
-     * @param movieId The unique identifier of the movie.
+     * Toggles a movie's label visibility.
      */
     fun toggleLabel(movieId: String) {
         _labelStates[movieId] = !_labelStates.getOrDefault(movieId, false)
     }
+
     /**
-     * Determines the text to display on the toggle label button.
-     *
-     * @param movieId The unique identifier of the movie.
-     * @return "Hide Label" if the label is currently visible, otherwise "Show Label".
+     * Determines the button text for showing/hiding labels.
      */
     fun getButtonText(movieId: String): String {
         return if (_labelStates.getOrDefault(movieId, false)) "Hide Label" else "Show Label"
     }
 
     /**
-     * Updates the query state and triggers a movie search.
-     *
-     * @param newQuery The new search term entered by the user.
+     * Updates the search query in the UI state.
      */
     fun onQueryChange(newQuery: String) {
         _uiState.update { it.copy(query = newQuery) }
     }
+
     /**
-     * Initiates a movie search based on the current query.
-     * Resets the movie list and pagination state.
+     * Initiates a new search, resets pagination state, and loads the first page.
      */
     fun searchMovies() {
-        if (isLoadingPage) return // Prevent duplicate loading
+        // Avoid simultaneous requests
+        if (isLoadingPage) return
         isLoadingPage = true
 
+        // Reset UI state for a fresh search
+        currentPage = 1
+        _uiState.update {
+            it.copy(
+                movies = emptyList(),
+                noMoreData = false,
+                totalResults = 0,
+                errorMessage = null,
+                isLoading = true
+            )
+        }
+
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             val currentQuery = _uiState.value.query
-            val result = repository.searchMovies(currentQuery)
-            result.onSuccess { movieList ->
+            val result = repository.searchMovies(currentQuery, page = currentPage)
+            result.onSuccess { searchResult ->
                 _uiState.update {
                     it.copy(
-                        movies = movieList,
+                        movies = searchResult.movies,
                         isLoading = false,
+                        totalResults = searchResult.totalResults,
                         errorMessage = null
                     )
                 }
-                currentPage = 2 // Reset pagination to page 2 after a new search
+                currentPage = 2
+
+                // If there's only one result or no result, we might be done immediately
+                checkNoMoreData()
             }.onFailure { throwable ->
                 _uiState.update {
                     it.copy(
@@ -103,31 +116,48 @@ class MovieViewModel : ViewModel() {
             isLoadingPage = false
         }
     }
+
     /**
-     * Loads additional movies for pagination when the user scrolls to the bottom.
-     * Prevents duplicate requests and updates the state accordingly.
+     * Loads additional pages for pagination when the user scrolls to the bottom.
      */
     fun loadMoreMovies() {
-        if (isLoadingPage) return // Prevents multiple simultaneous requests
+        // Block further loading if we're already loading a page or no more data is available
+        if (isLoadingPage || _uiState.value.noMoreData) return
         isLoadingPage = true
 
+        _uiState.update { it.copy(isPaginating = true) }
         viewModelScope.launch {
-            _uiState.update { it.copy(isPaginating = true) }
             val currentQuery = _uiState.value.query
-
             val result = repository.searchMovies(currentQuery, page = currentPage)
-            result.onSuccess { movieList ->
+            result.onSuccess { searchResult ->
                 _uiState.update {
                     it.copy(
-                        movies = it.movies + movieList, // Append new movies to the existing list
-                        isPaginating = false
+                        movies = it.movies + searchResult.movies, // Append new items
+                        isPaginating = false,
+                        totalResults = searchResult.totalResults // Might be the same each time
                     )
                 }
-                currentPage++ // Increment the page number for next request
+                currentPage++
+                checkNoMoreData()
             }.onFailure {
                 _uiState.update { it.copy(isPaginating = false) }
             }
             isLoadingPage = false
+        }
+    }
+
+    /**
+     * Checks if we've already loaded all data based on totalResults.
+     * If movies list size matches or exceeds totalResults, set noMoreData = true.
+     */
+    private fun checkNoMoreData() {
+        val state = _uiState.value
+        val loadedCount = state.movies.size
+        val total = state.totalResults
+
+        // If we've reached or exceeded the total movie count, no more data to load
+        if (loadedCount >= total && total > 0) {
+            _uiState.update { it.copy(noMoreData = true) }
         }
     }
 }

@@ -159,8 +159,11 @@ fun MovieList(viewModel: MovieViewModel) {
     LaunchedEffect(listState) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
             .collect { lastVisibleIndex ->
-                if (lastVisibleIndex != null && lastVisibleIndex >= uiState.movies.size - 1) {
-                    viewModel.loadMoreMovies() // Trigger pagination when the last item is reached
+                // Only attempt to load more if we haven't exhausted data
+                if (!uiState.noMoreData && lastVisibleIndex != null
+                    && lastVisibleIndex >= uiState.movies.size - 1
+                ) {
+                    viewModel.loadMoreMovies()
                 }
             }
     }
@@ -198,6 +201,19 @@ fun MovieList(viewModel: MovieViewModel) {
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator() // Shows a spinning loader
+                }
+            }
+        }
+        // Display a "No more data" message if all results have been loaded
+        if (uiState.noMoreData) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "No more data.")
                 }
             }
         }

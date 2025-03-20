@@ -1,9 +1,10 @@
-package com.vector.omdbapp
+package com.vector.omdbapp.viewmodel
 
-import android.content.Context
+import android.app.Application
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.vector.omdbapp.R
 import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.data.repository.MovieRepository
 import kotlinx.coroutines.channels.Channel
@@ -38,7 +39,7 @@ data class MovieUiState(
 /**
  * ViewModel manages the search, pagination, and label states.
  */
-class MovieViewModel(private val context: Context) : ViewModel() {
+class MovieViewModel(application: Application) : AndroidViewModel(application)  {
     private val repository = MovieRepository()
 
     private val _uiState = MutableStateFlow(MovieUiState())
@@ -65,8 +66,8 @@ class MovieViewModel(private val context: Context) : ViewModel() {
      */
     fun getButtonText(movieId: String): String {
         return if (_labelStates.getOrDefault(movieId, false))
-            context.getString(R.string.hide_label_button)
-        else  context.getString(R.string.show_label_button)
+            getApplication<Application>().getString(R.string.hide_label_button)
+        else  getApplication<Application>().getString(R.string.show_label_button)
     }
 
     /**
@@ -84,7 +85,7 @@ class MovieViewModel(private val context: Context) : ViewModel() {
         // Avoid empty queries
         if (query.isEmpty()) {
             viewModelScope.launch {
-                _snackbarChannel.send( context.getString(R.string.empty_query_message) )
+                _snackbarChannel.send( getApplication<Application>().getString(R.string.empty_query_message) )
             }
             return
         }
@@ -104,11 +105,11 @@ class MovieViewModel(private val context: Context) : ViewModel() {
                 isLoading = true
             )
         }
-
+        // Launch a coroutine to load the first page
         viewModelScope.launch {
             val currentQuery = _uiState.value.query
             val result = repository.searchMovies(currentQuery, page = currentPage)
-
+            // Handle the result
             result.onSuccess { searchResult ->
                 val filteredMovies = filterDuplicateMovies(searchResult.movies)
                 _uiState.update {
@@ -143,8 +144,9 @@ class MovieViewModel(private val context: Context) : ViewModel() {
         // Block further loading if we're already loading a page or no more data is available
         if (isLoadingPage || _uiState.value.noMoreData) return
         isLoadingPage = true
-
+        // Set the loading state
         _uiState.update { it.copy(isPaginating = true) }
+        // Launch a coroutine to load the next page
         viewModelScope.launch {
             val result = repository.searchMovies(currentQuery, page = currentPage)
             result.onSuccess { searchResult ->

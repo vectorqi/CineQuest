@@ -1,5 +1,6 @@
 package com.vector.omdbapp
 
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -45,6 +46,8 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
+import com.vector.omdbapp.viewmodel.MovieViewModel
+import com.vector.omdbapp.viewmodel.MovieViewModelFactory
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
@@ -52,8 +55,9 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewModel = MovieViewModel(this)
         setContent {
+            val application = applicationContext as Application
+            val viewModel: MovieViewModel = viewModel(factory = MovieViewModelFactory(application))
             OmdbAppScreen(viewModel = viewModel)
         }
     }
@@ -248,7 +252,7 @@ fun MovieList(viewModel: MovieViewModel) {
 }
 @Composable
 fun MovieItem(movie: com.vector.omdbapp.data.model.Movie, viewModel: MovieViewModel) {
-    val isLabelVisible = viewModel.labelStates[movie.imdbID] ?: false
+    val isLabelVisible = viewModel.labelStates[movie.imdbID] == true
     val buttonText = viewModel.getButtonText(movie.imdbID)
     val context = LocalContext.current
     val customImageLoader = ImageLoader.Builder(context)

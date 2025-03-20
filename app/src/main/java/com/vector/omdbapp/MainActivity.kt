@@ -156,6 +156,7 @@ fun SearchBar(
 ) {
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    // Limit the input to 30 characters
     val maxCharacters = 30
     Row(
         modifier = Modifier
@@ -163,6 +164,7 @@ fun SearchBar(
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // TextField for user input
         TextField(
             value = query,
             onValueChange = { newText ->
@@ -175,7 +177,9 @@ fun SearchBar(
             label = { Text(context.getString(R.string.search_label)) }
         )
         Spacer(modifier = Modifier.width(8.dp))
+        // Button to trigger the search
         Button(onClick = {
+            // Hide the keyboard
             keyboardController?.hide()
             onSearchClick()
         }
@@ -263,11 +267,16 @@ fun MovieList(viewModel: MovieViewModel) {
         }
     }
 }
+
+/**
+ * Display a single movie item in the list.
+ */
 @Composable
 fun MovieItem(movie: com.vector.omdbapp.data.model.Movie, viewModel: MovieViewModel) {
     val isLabelVisible = viewModel.labelStates[movie.imdbID] == true
     val buttonText = viewModel.getButtonText(movie.imdbID)
     val context = LocalContext.current
+    // Create a custom image loader with disk and memory caching enabled
     val customImageLoader = ImageLoader.Builder(context)
         .crossfade(true)
         .diskCachePolicy(CachePolicy.ENABLED)

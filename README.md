@@ -2,6 +2,10 @@
 
 A demo Android application built with **Jetpack Compose** and **MVVM** architecture, showcasing movie search with pagination using the OMDB API. The code uses **StateFlow**, **snapshotFlow**, and **Channel**/`Flow` for reactive state management.
 
+## Author
+
+**Vector Qi** 
+
 ## Features
 
 - **Movie Search**: Search for movies by title using the [OMDB API](https://www.omdbapi.com/).

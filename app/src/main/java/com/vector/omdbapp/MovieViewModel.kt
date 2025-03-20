@@ -1,5 +1,6 @@
 package com.vector.omdbapp
 
+import android.content.Context
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -37,7 +38,7 @@ data class MovieUiState(
 /**
  * ViewModel manages the search, pagination, and label states.
  */
-class MovieViewModel : ViewModel() {
+class MovieViewModel(private val context: Context) : ViewModel() {
     private val repository = MovieRepository()
 
     private val _uiState = MutableStateFlow(MovieUiState())
@@ -63,7 +64,9 @@ class MovieViewModel : ViewModel() {
      * Determines the button text for showing/hiding labels.
      */
     fun getButtonText(movieId: String): String {
-        return if (_labelStates.getOrDefault(movieId, false)) "Hide Label" else "Show Label"
+        return if (_labelStates.getOrDefault(movieId, false))
+            context.getString(R.string.hide_label_button)
+        else  context.getString(R.string.show_label_button)
     }
 
     /**
@@ -81,7 +84,7 @@ class MovieViewModel : ViewModel() {
         // Avoid empty queries
         if (query.isEmpty()) {
             viewModelScope.launch {
-                _snackbarChannel.send("Please enter a movie name to search.")
+                _snackbarChannel.send( context.getString(R.string.empty_query_message) )
             }
             return
         }

@@ -39,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.ImageLoader
@@ -53,41 +52,45 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val viewModel = MovieViewModel(this)
         setContent {
-            OmdbAppScreen()
+            OmdbAppScreen(viewModel = viewModel)
         }
     }
 }
-@Preview
-@Composable
-fun OmdbAppScreenPreview() {
-    OmdbAppScreen()
-}
-
-@Preview
-@Composable
-fun SearchBarPreview() {
-    SearchBar(query = "Movie Title", onQueryChange = {}, onSearchClick = {})
-}
-
-@Preview
-@Composable
-fun MovieListPreview() {
-    MovieList(viewModel = viewModel())
-}
-
-@Preview
-@Composable
-fun MovieItemPreview() {
-    val movie = com.vector.omdbapp.data.model.Movie(
-        title = "Movie 1",
-        year = "2021",
-        imdbID = "12345",
-        posterUrl = "https://www.omdbapi.com/src/poster.jpg",
-        type = "movie"
-    )
-    MovieItem(movie = movie, viewModel = viewModel())
-}
+/**
+ * For UI verification only
+ */
+//@Preview
+//@Composable
+//fun OmdbAppScreenPreview() {
+//    OmdbAppScreen()
+//}
+//
+//@Preview
+//@Composable
+//fun SearchBarPreview() {
+//    SearchBar(query = "Movie Title", onQueryChange = {}, onSearchClick = {})
+//}
+//
+//@Preview
+//@Composable
+//fun MovieListPreview() {
+//    MovieList(viewModel = viewModel())
+//}
+//
+//@Preview
+//@Composable
+//fun MovieItemPreview() {
+//    val movie = com.vector.omdbapp.data.model.Movie(
+//        title = "Movie 1",
+//        year = "2021",
+//        imdbID = "12345",
+//        posterUrl = "https://www.omdbapi.com/src/poster.jpg",
+//        type = "movie"
+//    )
+//    MovieItem(movie = movie, viewModel = viewModel())
+//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,6 +98,7 @@ fun OmdbAppScreen(viewModel: MovieViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     // Observe snackbar messages from the ViewModel
     LaunchedEffect(Unit) {
@@ -106,7 +110,7 @@ fun OmdbAppScreen(viewModel: MovieViewModel = viewModel()) {
     }
 
     Scaffold(topBar = {
-        TopAppBar(title = { Text("OMDB Search APP") })
+        TopAppBar(title = { Text(context.getString(R.string.app_title)) })
     },snackbarHost = { SnackbarHost(hostState = snackbarHostState) }) {
         Column(modifier = Modifier.padding(it).fillMaxSize()) {
             SearchBar(
@@ -125,7 +129,7 @@ fun OmdbAppScreen(viewModel: MovieViewModel = viewModel()) {
                 }
                 uiState.errorMessage != null -> {
                     Text(
-                        text = "Error: ${uiState.errorMessage}",
+                        text = context.getString(R.string.error_label) + uiState.errorMessage,
                         modifier = Modifier.padding(16.dp),
                         style = MaterialTheme.typography.bodyLarge
                     )
@@ -144,6 +148,7 @@ fun SearchBar(
     onQueryChange: (String) -> Unit,
     onSearchClick: () -> Unit
 ) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .padding(8.dp)
@@ -154,11 +159,11 @@ fun SearchBar(
             value = query,
             onValueChange = onQueryChange,
             modifier = Modifier.weight(1f),
-            label = { Text("Search movies") }
+            label = { Text(context.getString(R.string.search_label)) }
         )
         Spacer(modifier = Modifier.width(8.dp))
         Button(onClick = onSearchClick) {
-            Text("Search")
+            Text(context.getString(R.string.search_button))
         }
     }
 }
@@ -169,7 +174,7 @@ fun MovieList(viewModel: MovieViewModel) {
     val uiState by viewModel.uiState.collectAsState()
     // LazyListState keeps track of the scroll position in LazyColumn
     val listState = rememberLazyListState()
-
+    val context = LocalContext.current
     /**
      * Scroll detection logic:
      * - This effect monitors the scrolling state of LazyColumn.
@@ -235,7 +240,7 @@ fun MovieList(viewModel: MovieViewModel) {
                         .padding(12.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "No more data.")
+                    Text(text = context.getString(R.string.no_more_data))
                 }
             }
         }
@@ -282,7 +287,7 @@ fun MovieItem(movie: com.vector.omdbapp.data.model.Movie, viewModel: MovieViewMo
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = "Year: ${movie.year}",
+                text = context.getString(R.string.year_label) + movie.year,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -290,7 +295,7 @@ fun MovieItem(movie: com.vector.omdbapp.data.model.Movie, viewModel: MovieViewMo
 
             if (isLabelVisible) {
                 Text(
-                    text = "Label displayed",
+                    text = context.getString(R.string.label_displayed),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary
                 )

@@ -1,3 +1,13 @@
 <resources>
-    <string name="app_name">OMDBAPP</string>
+    <string name="app_name">OMDb App</string>
+    <string name="app_title">OMDB Search APP</string>
+    <string name="search_label">Search movies</string>
+    <string name="search_button">Search</string>
+    <string name="error_label">Error: </string>
+    <string name="no_more_data">No more data.</string>
+    <string name="empty_query_message">Please enter a movie name to search.</string>
+    <string name="show_label_button">Show Label</string>
+    <string name="hide_label_button">Hide Label</string>
+    <string name="year_label">Year: </string>
+    <string name="label_displayed">Label displayed</string>
 </resources>

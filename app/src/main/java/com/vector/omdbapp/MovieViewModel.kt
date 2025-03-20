@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.data.repository.MovieRepository
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -46,6 +48,9 @@ class MovieViewModel : ViewModel() {
 
     private var currentPage = 1        // Tracks which page we are currently loading
     private var isLoadingPage = false  // Prevents duplicate requests
+    private val _snackbarChannel = Channel<String>(Channel.BUFFERED)  // Channel for snackbar messages
+    val snackbarFlow = _snackbarChannel.receiveAsFlow()  // Convert the channel to a flow
+    private var currentQuery: String = ""
 
     /**
      * Toggles a movie's label visibility.
@@ -72,12 +77,21 @@ class MovieViewModel : ViewModel() {
      * Initiates a new search, resets pagination state, and loads the first page.
      */
     fun searchMovies() {
+        val query = _uiState.value.query.trim()
+        // Avoid empty queries
+        if (query.isEmpty()) {
+            viewModelScope.launch {
+                _snackbarChannel.send("Please enter a movie name to search.")
+            }
+            return
+        }
         // Avoid simultaneous requests
         if (isLoadingPage) return
         isLoadingPage = true
 
         // Reset UI state for a fresh search
         currentPage = 1
+        currentQuery = query  // Update the current query
         _uiState.update {
             it.copy(
                 movies = emptyList(),
@@ -129,7 +143,6 @@ class MovieViewModel : ViewModel() {
 
         _uiState.update { it.copy(isPaginating = true) }
         viewModelScope.launch {
-            val currentQuery = _uiState.value.query
             val result = repository.searchMovies(currentQuery, page = currentPage)
             result.onSuccess { searchResult ->
                 val filteredMovies = filterDuplicateMovies(searchResult.movies)

@@ -39,6 +39,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -112,10 +113,11 @@ fun OmdbAppScreen(viewModel: MovieViewModel = viewModel()) {
             }
         }
     }
-
+    // Scaffold with top bar and snackbar
     Scaffold(topBar = {
         TopAppBar(title = { Text(context.getString(R.string.app_title)) })
-    },snackbarHost = { SnackbarHost(hostState = snackbarHostState) }) {
+    },snackbarHost = { SnackbarHost(hostState = snackbarHostState) })
+    {
         Column(modifier = Modifier.padding(it).fillMaxSize()) {
             SearchBar(
                 query = uiState.query,
@@ -153,6 +155,8 @@ fun SearchBar(
     onSearchClick: () -> Unit
 ) {
     val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val maxCharacters = 30
     Row(
         modifier = Modifier
             .padding(8.dp)
@@ -161,12 +165,21 @@ fun SearchBar(
     ) {
         TextField(
             value = query,
-            onValueChange = onQueryChange,
+            onValueChange = { newText ->
+                // Limit the input to 30 characters
+                if (newText.length <= maxCharacters) {
+                    onQueryChange(newText)
+                }
+            },
             modifier = Modifier.weight(1f),
             label = { Text(context.getString(R.string.search_label)) }
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Button(onClick = onSearchClick) {
+        Button(onClick = {
+            keyboardController?.hide()
+            onSearchClick()
+        }
+        ) {
             Text(context.getString(R.string.search_button))
         }
     }

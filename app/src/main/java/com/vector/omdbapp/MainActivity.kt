@@ -38,8 +38,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
 import coil.request.ImageRequest
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,7 +90,7 @@ fun OmdbAppScreen(viewModel: MovieViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(topBar = {
-        TopAppBar(title = { Text("OMDB Search Demo") })
+        TopAppBar(title = { Text("OMDB Search APP") })
     }) {
         Column(modifier = Modifier.padding(it).fillMaxSize()) {
             SearchBar(
@@ -156,8 +160,10 @@ fun MovieList(viewModel: MovieViewModel) {
      * - It uses snapshotFlow to continuously observe the last visible item index.
      * - If the user scrolls to the last item, it triggers the `loadMoreMovies()` function in the ViewModel.
      */
+    @OptIn(FlowPreview::class)
     LaunchedEffect(listState) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+            .debounce(200)//200 milliseconds throttle
             .collect { lastVisibleIndex ->
                 // Only attempt to load more if we haven't exhausted data
                 if (!uiState.noMoreData && lastVisibleIndex != null
@@ -185,7 +191,7 @@ fun MovieList(viewModel: MovieViewModel) {
          * - Each movie is displayed using the `MovieItem` composable.
          * - A `Divider()` is added to separate items visually.
          */
-        items(uiState.movies) { movie ->
+        items(uiState.movies, key = { movie -> movie.imdbID }) { movie ->
             MovieItem(movie = movie, viewModel = viewModel)
             HorizontalDivider(modifier = Modifier.fillMaxWidth(),thickness = 1.dp)
         }
@@ -223,7 +229,12 @@ fun MovieList(viewModel: MovieViewModel) {
 fun MovieItem(movie: com.vector.omdbapp.data.model.Movie, viewModel: MovieViewModel) {
     val isLabelVisible = viewModel.labelStates[movie.imdbID] ?: false
     val buttonText = viewModel.getButtonText(movie.imdbID)
-
+    val context = LocalContext.current
+    val customImageLoader = ImageLoader.Builder(context)
+        .crossfade(true)
+        .diskCachePolicy(CachePolicy.ENABLED)
+        .memoryCachePolicy(CachePolicy.ENABLED)
+        .build()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -237,7 +248,10 @@ fun MovieItem(movie: com.vector.omdbapp.data.model.Movie, viewModel: MovieViewMo
                 .data(movie.posterUrl)
                 .placeholder(R.drawable.loading)
                 .error(R.drawable.error)
+                .size(128, 192)
+
                 .build(),
+            imageLoader = customImageLoader,
             contentDescription = movie.title,
             modifier = Modifier.size(80.dp)
         )
@@ -272,40 +286,3 @@ fun MovieItem(movie: com.vector.omdbapp.data.model.Movie, viewModel: MovieViewMo
         }
     }
 }
-
-//@Composable
-//fun MovieItem(movie: com.vector.omdbapp.data.model.Movie, viewModel: MovieViewModel) {
-//    // Get the current label state for the movie
-//    val isLabelVisible = viewModel.labelStates[movie.imdbID] ?: false
-//    val buttonText = viewModel.getButtonText(movie.imdbID)
-//    Row(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(8.dp),
-//        horizontalArrangement = Arrangement.SpaceBetween,
-//        verticalAlignment = Alignment.Top
-//    ) {
-//        Row(modifier = Modifier.weight(1f)) {
-//            AsyncImage(
-//                model = movie.posterUrl,
-//                contentDescription = movie.title,
-//                modifier = Modifier.size(80.dp)
-//            )
-//        Spacer(modifier = Modifier.width(8.dp))
-//        Column( modifier = Modifier.weight(1f) ){
-//            Text(text = movie.title, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-//            Text(text = "Year: ${movie.year}", style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-//            if (isLabelVisible) {
-//                AssistChip(
-//                    onClick = { /* Do nothing, just for display */ },
-//                    label = { Text("Label displayed") }
-//                )
-//            }
-//        }
-//    }
-//        Button(
-//            onClick = { viewModel.toggleLabel(movie.imdbID) },
-//            modifier = Modifier.wrapContentSize()
-//        ) { Text(buttonText) }
-//    }
-//}

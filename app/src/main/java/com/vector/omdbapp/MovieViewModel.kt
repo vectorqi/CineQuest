@@ -91,10 +91,12 @@ class MovieViewModel : ViewModel() {
         viewModelScope.launch {
             val currentQuery = _uiState.value.query
             val result = repository.searchMovies(currentQuery, page = currentPage)
+
             result.onSuccess { searchResult ->
+                val filteredMovies = filterDuplicateMovies(searchResult.movies)
                 _uiState.update {
                     it.copy(
-                        movies = searchResult.movies,
+                        movies = filteredMovies,
                         isLoading = false,
                         totalResults = searchResult.totalResults,
                         errorMessage = null
@@ -130,9 +132,10 @@ class MovieViewModel : ViewModel() {
             val currentQuery = _uiState.value.query
             val result = repository.searchMovies(currentQuery, page = currentPage)
             result.onSuccess { searchResult ->
+                val filteredMovies = filterDuplicateMovies(searchResult.movies)
                 _uiState.update {
                     it.copy(
-                        movies = it.movies + searchResult.movies, // Append new items
+                        movies = it.movies + filteredMovies, // Append filtered new items
                         isPaginating = false,
                         totalResults = searchResult.totalResults // Might be the same each time
                     )
@@ -145,7 +148,13 @@ class MovieViewModel : ViewModel() {
             isLoadingPage = false
         }
     }
-
+    /**
+     * Filters out duplicate movies from the new data since the Server may return duplicate results.
+     */
+    private fun filterDuplicateMovies(newMovies: List<Movie>): List<Movie> {
+        val currentIds = _uiState.value.movies.map { it.imdbID }.toSet()
+        return newMovies.filter { it.imdbID !in currentIds }
+    }
     /**
      * Checks if we've already loaded all data based on totalResults.
      * If movies list size matches or exceeds totalResults, set noMoreData = true.

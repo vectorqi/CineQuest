@@ -22,7 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.vector.omdbapp.R
 import com.vector.omdbapp.viewmodel.MovieViewModel
 import kotlinx.coroutines.launch
@@ -36,7 +36,8 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OmdbAppScreen(viewModel: MovieViewModel = viewModel()) {
+fun OmdbAppScreen() {
+    val viewModel: MovieViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -59,7 +60,7 @@ fun OmdbAppScreen(viewModel: MovieViewModel = viewModel()) {
             SearchBar(
                 query = uiState.query,
                 onQueryChange = { newQuery -> viewModel.onQueryChange(newQuery) },
-                onSearchClick = { viewModel.searchMovies() }
+                onSearchClick = { viewModel.searchMovies(context.getString(R.string.empty_query_message)) }
             )
             when {
                 uiState.isLoading -> {
@@ -78,7 +79,7 @@ fun OmdbAppScreen(viewModel: MovieViewModel = viewModel()) {
                     )
                 }
                 else -> {
-                    MovieList(viewModel)
+                    MovieList()
                 }
             }
         }

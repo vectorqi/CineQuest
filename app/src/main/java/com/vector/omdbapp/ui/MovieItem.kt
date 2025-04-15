@@ -22,6 +22,7 @@ import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.vector.omdbapp.R
+import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.viewmodel.MovieViewModel
 
 /**
@@ -33,10 +34,15 @@ import com.vector.omdbapp.viewmodel.MovieViewModel
  */
 
 @Composable
-fun MovieItem(movie: com.vector.omdbapp.data.model.Movie, viewModel: MovieViewModel) {
-    val isLabelVisible = viewModel.labelStates[movie.imdbID] == true
-    val buttonText = viewModel.getButtonText(movie.imdbID)
+fun MovieItem(movie: Movie, viewModel: MovieViewModel) {
     val context = LocalContext.current
+    val isLabelVisible = viewModel.labelStates[movie.imdbID] == true
+
+    val showLabel = context.getString(R.string.show_label_button)
+    val hideLabel = context.getString(R.string.hide_label_button)
+
+    val buttonText = viewModel.getButtonText(movie.imdbID,showLabel,hideLabel)
+
     // Create a custom image loader with disk and memory caching enabled
     val customImageLoader = ImageLoader.Builder(context)
         .crossfade(true)
@@ -52,7 +58,7 @@ fun MovieItem(movie: com.vector.omdbapp.data.model.Movie, viewModel: MovieViewMo
     ) {
         // Provide a placeholder image if the poster is loading or fails
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
+            model = ImageRequest.Builder(context)
                 .data(movie.posterUrl)
                 .placeholder(R.drawable.loading)
                 .error(R.drawable.error)

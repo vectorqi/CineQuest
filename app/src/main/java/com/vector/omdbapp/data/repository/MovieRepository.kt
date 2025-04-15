@@ -4,6 +4,8 @@ import com.vector.omdbapp.data.model.MovieSearchResult
 import com.vector.omdbapp.data.remote.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Repository class responsible for fetching data from the OMDB API,
@@ -13,7 +15,8 @@ import kotlinx.coroutines.withContext
  *       In a production environment, do not store API keys directly in the code.
  *       Exposing secrets can lead to security risks and potential abuse of your key.
  */
-class MovieRepository {
+@Singleton
+class MovieRepository @Inject constructor(){
 
     /**
      * Hard-coded OMDB API key:

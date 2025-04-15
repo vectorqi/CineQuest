@@ -1,18 +1,18 @@
 package com.vector.omdbapp.viewmodel
 
-import android.app.Application
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vector.omdbapp.R
 import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.data.repository.MovieRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Represents the UI state, including movies, query text, and
@@ -26,6 +26,8 @@ import kotlinx.coroutines.launch
  * @param noMoreData True when we've loaded all possible data.
  * @param totalResults Number of total hits reported by OMDB.
  */
+
+
 data class MovieUiState(
     val query: String = "",
     val movies: List<Movie> = emptyList(),
@@ -39,8 +41,8 @@ data class MovieUiState(
 /**
  * ViewModel manages the search, pagination, and label states.
  */
-class MovieViewModel(application: Application) : AndroidViewModel(application)  {
-    private val repository = MovieRepository()
+@HiltViewModel
+class MovieViewModel @Inject constructor(private val repository: MovieRepository) : ViewModel()  {
 
     private val _uiState = MutableStateFlow(MovieUiState())
     val uiState: StateFlow<MovieUiState> = _uiState
@@ -64,10 +66,8 @@ class MovieViewModel(application: Application) : AndroidViewModel(application)  
     /**
      * Determines the button text for showing/hiding labels.
      */
-    fun getButtonText(movieId: String): String {
-        return if (_labelStates.getOrDefault(movieId, false))
-            getApplication<Application>().getString(R.string.hide_label_button)
-        else  getApplication<Application>().getString(R.string.show_label_button)
+    fun getButtonText(movieId: String, showText: String, hideText:String): String {
+        return if (_labelStates.getOrDefault(movieId, false)) hideText else showText
     }
 
     /**
@@ -80,12 +80,12 @@ class MovieViewModel(application: Application) : AndroidViewModel(application)  
     /**
      * Initiates a new search, resets pagination state, and loads the first page.
      */
-    fun searchMovies() {
+    fun searchMovies(emptyQueryMessage: String) {
         val query = _uiState.value.query.trim()
         // Avoid empty queries
         if (query.isEmpty()) {
             viewModelScope.launch {
-                _snackbarChannel.send( getApplication<Application>().getString(R.string.empty_query_message) )
+                _snackbarChannel.send(emptyQueryMessage)
             }
             return
         }
@@ -183,7 +183,7 @@ class MovieViewModel(application: Application) : AndroidViewModel(application)  
         val total = state.totalResults
 
         // If we've reached or exceeded the total movie count, no more data to load
-        if (loadedCount >= total && total > 0) {
+        if (total in 1..loadedCount) {
             _uiState.update { it.copy(noMoreData = true) }
         }
     }

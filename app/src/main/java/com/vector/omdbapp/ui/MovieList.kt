@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.vector.omdbapp.R
 import com.vector.omdbapp.viewmodel.MovieViewModel
 import kotlinx.coroutines.FlowPreview
@@ -33,7 +34,8 @@ import kotlinx.coroutines.flow.debounce
  */
 
 @Composable
-fun MovieList(viewModel: MovieViewModel) {
+fun MovieList() {
+    val viewModel: MovieViewModel = hiltViewModel()
     // Collect the UI state from the ViewModel
     val uiState by viewModel.uiState.collectAsState()
     // LazyListState keeps track of the scroll position in LazyColumn

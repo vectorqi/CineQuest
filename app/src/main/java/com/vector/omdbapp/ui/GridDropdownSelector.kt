@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
@@ -38,17 +40,23 @@ fun GridDropdownSelector(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Column(modifier = modifier) {
-        Text(text = label, style = MaterialTheme.typography.labelSmall)
+    Column(modifier = modifier.padding(5.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = label, style = MaterialTheme.typography.labelMedium)
         Box {
-            Button(onClick = { expanded = true }) {
+            Button(modifier =
+                Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Gray,      // Background Color
+                    contentColor = Color.White        // Text Color
+                ),
+                onClick = { expanded = true }) {
                 Text(selectedOption.ifBlank { "Select" })
             }
 
             //Custom Popup dropdown menu
             if (expanded) {
                 Popup(
-                    alignment = Alignment.TopStart,
+                    alignment = Alignment.TopEnd,
                     onDismissRequest = { expanded = false },
                     properties = PopupProperties(focusable = true)
                 ) {

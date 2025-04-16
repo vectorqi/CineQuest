@@ -1,9 +1,11 @@
 package com.vector.omdbapp.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -71,7 +73,7 @@ fun SearchBar(
             Text(context.getString(R.string.search_button))
         }
     }
-        Row (){
+        Row (modifier = Modifier.height(IntrinsicSize.Min)){
             val typeOptions = SearchType.displayNames()
             val yearOptions = YearFilter.generateYearOptions()
             GridDropdownSelector(
@@ -80,13 +82,16 @@ fun SearchBar(
                 selectedOption = selectedType.displayName,
                 onOptionSelected = {
                     onTypeChange(SearchType.fromDisplayName(it))
-                }
+                },
+                modifier = Modifier.weight(1f)
             )
+
             GridDropdownSelector(
                 label = "Year",
                 options = yearOptions,
                 selectedOption = selectedYear,
-                onOptionSelected = onYearChange
+                onOptionSelected = onYearChange,
+                modifier = Modifier.weight(1f)
             )
 
         }

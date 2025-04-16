@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vector.omdbapp.data.model.Movie
-import com.vector.omdbapp.data.model.SearchType
+import com.vector.omdbapp.data.model.TypeFilter
 import com.vector.omdbapp.data.model.YearFilter
 import com.vector.omdbapp.data.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,11 +33,12 @@ import javax.inject.Inject
 data class MovieUiState(
     val query: String = "",
     val selectedYear: String = YearFilter.ALL,
-    val selectedType: SearchType  = SearchType.ALL,// "all" or "" means no filter
+    val selectedType: TypeFilter  = TypeFilter.ALL,// "all" or "" means no filter
     val movies: List<Movie> = emptyList(),
     val errorMessage: String? = null,
     val isLoading: Boolean = false,
     val isPaginating: Boolean = false,
+    val isRefreshing: Boolean = false,
     val noMoreData: Boolean = false,  // Prevents further loading after final page
     val totalResults: Int = 0
 )
@@ -47,16 +48,17 @@ data class MovieUiState(
  */
 @HiltViewModel
 class MovieViewModel @Inject constructor(private val repository: MovieRepository) : ViewModel()  {
-
+    private val firstPage = 1
     private val _uiState = MutableStateFlow(MovieUiState())
     val uiState: StateFlow<MovieUiState> = _uiState
 
     private val _labelStates = mutableStateMapOf<String, Boolean>()
     val labelStates: Map<String, Boolean> get() = _labelStates
 
-    private var currentPage = 1        // Tracks which page we are currently loading
+    private var _currentPage = firstPage        // Tracks which page we are currently loading
     private var isLoadingPage = false  // Prevents duplicate requests
     private val _snackbarChannel = Channel<String>(Channel.BUFFERED)  // Channel for snackbar messages
+    val currentPage: Int get() = this._currentPage
     val snackbarFlow = _snackbarChannel.receiveAsFlow()  // Convert the channel to a flow
     private var currentQuery: String = ""
 
@@ -98,7 +100,7 @@ class MovieViewModel @Inject constructor(private val repository: MovieRepository
         isLoadingPage = true
 
         // Reset UI state for a fresh search
-        currentPage = 1
+        _currentPage = firstPage
         currentQuery = query  // Update the current query
         _uiState.update {
             it.copy(
@@ -112,10 +114,10 @@ class MovieViewModel @Inject constructor(private val repository: MovieRepository
         // Launch a coroutine to load the first page
         viewModelScope.launch {
             val currentQuery = _uiState.value.query
-            val typeParam = if (_uiState.value.selectedType == SearchType.ALL) "" else _uiState.value.selectedType.value
-            val yearParam = if (_uiState.value.selectedYear == "All") "" else _uiState.value.selectedYear
+            val typeParam = if (_uiState.value.selectedType == TypeFilter.ALL) "" else _uiState.value.selectedType.value
+            val yearParam = if (_uiState.value.selectedYear == YearFilter.ALL) "" else _uiState.value.selectedYear
 
-            val result = repository.searchMovies(currentQuery,typeParam,yearParam, page = currentPage)
+            val result = repository.searchMovies(currentQuery,typeParam,yearParam, page = _currentPage)
             // Handle the result
             result.onSuccess { searchResult ->
                 val filteredMovies = filterDuplicateMovies(searchResult.movies)
@@ -127,7 +129,7 @@ class MovieViewModel @Inject constructor(private val repository: MovieRepository
                         errorMessage = null
                     )
                 }
-                currentPage = 2
+                _currentPage = firstPage+1
 
                 // If there's only one result or no result, we might be done immediately
                 checkNoMoreData()
@@ -144,7 +146,41 @@ class MovieViewModel @Inject constructor(private val repository: MovieRepository
         }
     }
 
-    fun onTypeChange(newType: SearchType) {
+    fun refreshMovies() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isRefreshing = true) }
+
+            val query = _uiState.value.query.trim()
+            val typeParam = if (_uiState.value.selectedType == TypeFilter.ALL) "" else _uiState.value.selectedType.value
+            val yearParam = if (_uiState.value.selectedYear == YearFilter.ALL) "" else _uiState.value.selectedYear
+
+            val result = repository.searchMovies(query,typeParam, yearParam,firstPage)
+            result.onSuccess { searchResult ->
+                _uiState.update {
+                    it.copy(
+                        movies = searchResult.movies,
+                        totalResults = searchResult.totalResults,
+                        isRefreshing = false,
+                        isPaginating = false,
+                        errorMessage = null,
+                        noMoreData = false,
+                    )
+                }
+                _currentPage = firstPage+1
+                checkNoMoreData()
+            }.onFailure {throwable ->
+                _uiState.update {
+                    it.copy(
+                        isRefreshing = false,
+                        isPaginating = false,
+                        errorMessage = throwable.message
+                    )
+                }
+            }
+        }
+    }
+
+    fun onTypeChange(newType: TypeFilter) {
         _uiState.update { it.copy(selectedType = newType) }
     }
     fun onYearChange(newYear: String) {
@@ -161,9 +197,9 @@ class MovieViewModel @Inject constructor(private val repository: MovieRepository
         _uiState.update { it.copy(isPaginating = true) }
         // Launch a coroutine to load the next page
         viewModelScope.launch {
-            val typeParam = if (_uiState.value.selectedType == SearchType.ALL) "" else _uiState.value.selectedType.value
+            val typeParam = if (_uiState.value.selectedType == TypeFilter.ALL) "" else _uiState.value.selectedType.value
             val yearParam = if (_uiState.value.selectedYear == YearFilter.ALL) "" else _uiState.value.selectedYear
-            val result = repository.searchMovies(currentQuery,typeParam,yearParam, page = currentPage)
+            val result = repository.searchMovies(currentQuery,typeParam,yearParam, page = _currentPage)
             result.onSuccess { searchResult ->
                 val filteredMovies = filterDuplicateMovies(searchResult.movies)
                 _uiState.update {
@@ -173,7 +209,7 @@ class MovieViewModel @Inject constructor(private val repository: MovieRepository
                         totalResults = searchResult.totalResults // Might be the same each time
                     )
                 }
-                currentPage++
+                _currentPage++
                 checkNoMoreData()
             }.onFailure {
                 _uiState.update { it.copy(isPaginating = false) }

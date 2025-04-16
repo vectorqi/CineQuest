@@ -48,18 +48,25 @@ fun MovieList() {
      * - If the user scrolls to the last item, it triggers the `loadMoreMovies()` function in the ViewModel.
      */
     @OptIn(FlowPreview::class)
-    (LaunchedEffect(listState) {
+    LaunchedEffect(Unit) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
-            .debounce(200)//200 milliseconds throttle
+            .debounce(200)
             .collect { lastVisibleIndex ->
-                // Only attempt to load more if we haven't exhausted data
-                if (!uiState.noMoreData && lastVisibleIndex != null
-                    && lastVisibleIndex >= uiState.movies.size - 1
+                if (
+                    !uiState.noMoreData &&
+                    !uiState.isLoading &&
+                    !uiState.isPaginating &&
+                    !uiState.isRefreshing &&
+                    uiState.movies.isNotEmpty() &&
+                    lastVisibleIndex != null &&
+                    lastVisibleIndex >= uiState.movies.size - 1 &&
+                    viewModel.currentPage > 1 &&
+                    listState.firstVisibleItemIndex > 0
                 ) {
                     viewModel.loadMoreMovies()
                 }
             }
-    })
+    }
 
     /**
      * LazyColumn displays the list of movies in a scrollable column.

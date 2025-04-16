@@ -4,6 +4,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +38,7 @@ import kotlinx.coroutines.launch
  * Displays the top bar, search bar, movie list, and handles loading/error states.
  * Also listens to snackbar events from the ViewModel and displays them via SnackbarHost.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun OmdbAppScreen() {
     val viewModel: MovieViewModel = hiltViewModel()
@@ -83,7 +87,23 @@ fun OmdbAppScreen() {
                     )
                 }
                 else -> {
-                    MovieList()
+                    val pullRefreshState = rememberPullRefreshState(
+                        refreshing = uiState.isRefreshing,
+                        onRefresh = { viewModel.refreshMovies() }
+                    )
+
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .pullRefresh(pullRefreshState)
+                    ) {
+                        MovieList()
+
+                        PullRefreshIndicator(
+                            refreshing = uiState.isRefreshing,
+                            state = pullRefreshState,
+                            modifier = Modifier.align(Alignment.TopCenter)
+                        )
+                    }
                 }
             }
         }

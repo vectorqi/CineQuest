@@ -18,7 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import com.vector.omdbapp.R
-import com.vector.omdbapp.data.model.SearchType
+import com.vector.omdbapp.data.model.TypeFilter
 import com.vector.omdbapp.data.model.YearFilter
 
 /**
@@ -36,8 +36,8 @@ fun SearchBar(
     onSearchClick: () -> Unit,
     selectedYear: String,
     onYearChange: (String) -> Unit,
-    selectedType: SearchType,
-    onTypeChange: (SearchType) ->Unit
+    selectedType: TypeFilter,
+    onTypeChange: (TypeFilter) ->Unit
 ) {
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -60,6 +60,7 @@ fun SearchBar(
                 }
             },
             modifier = Modifier.weight(1f),
+            singleLine = true,
             label = { Text(context.getString(R.string.search_label)) }
         )
         Spacer(modifier = Modifier.width(8.dp))
@@ -74,14 +75,14 @@ fun SearchBar(
         }
     }
         Row (modifier = Modifier.height(IntrinsicSize.Min)){
-            val typeOptions = SearchType.displayNames()
+            val typeOptions = TypeFilter.displayNames()
             val yearOptions = YearFilter.generateYearOptions()
             GridDropdownSelector(
                 label = "Type",
                 options = typeOptions,
                 selectedOption = selectedType.displayName,
                 onOptionSelected = {
-                    onTypeChange(SearchType.fromDisplayName(it))
+                    onTypeChange(TypeFilter.fromDisplayName(it))
                 },
                 modifier = Modifier.weight(1f)
             )

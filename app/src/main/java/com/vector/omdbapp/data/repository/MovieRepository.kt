@@ -33,10 +33,10 @@ class MovieRepository @Inject constructor(){
      * @param page The page number for pagination.
      * @return A Result wrapping MovieSearchResult on success, or an Exception on failure.
      */
-    suspend fun searchMovies(query: String, page: Int = 1): Result<MovieSearchResult> {
+    suspend fun searchMovies(query: String, type: String, year: String, page: Int = 1): Result<MovieSearchResult> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = RetrofitClient.api.searchMovies(apiKey, query, page)
+                val response = RetrofitClient.api.searchMovies(apiKey, query, type, year, page)
                 if (response.response == "True" && response.movies != null) {
                     // Parse totalResults; if null or invalid, default to 0
                     val totalCount = response.totalResults?.toIntOrNull() ?: 0

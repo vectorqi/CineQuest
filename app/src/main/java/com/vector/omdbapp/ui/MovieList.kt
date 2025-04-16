@@ -64,8 +64,6 @@ fun MovieList() {
     /**
      * LazyColumn displays the list of movies in a scrollable column.
      * - `state = listState` ensures we track scroll position.
-     * - `contentPadding` provides space around the edges.
-     * - `verticalArrangement.spacedBy(8.dp)` adds spacing between items.
      */
     LazyColumn(
         state = listState,

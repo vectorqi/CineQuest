@@ -1,5 +1,6 @@
 package com.vector.omdbapp.ui
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import com.vector.omdbapp.R
+import com.vector.omdbapp.data.model.SearchType
+import com.vector.omdbapp.data.model.YearFilter
 
 /**
  * SearchBar.kt
@@ -28,12 +31,17 @@ import com.vector.omdbapp.R
 fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
-    onSearchClick: () -> Unit
+    onSearchClick: () -> Unit,
+    selectedYear: String,
+    onYearChange: (String) -> Unit,
+    selectedType: SearchType,
+    onTypeChange: (SearchType) ->Unit
 ) {
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
     // Limit the input to 30 characters
     val maxCharacters = 30
+    Column(){
     Row(
         modifier = Modifier
             .padding(8.dp)
@@ -62,5 +70,26 @@ fun SearchBar(
         ) {
             Text(context.getString(R.string.search_button))
         }
+    }
+        Row (){
+            val typeOptions = SearchType.displayNames()
+            val yearOptions = YearFilter.generateYearOptions()
+            GridDropdownSelector(
+                label = "Type",
+                options = typeOptions,
+                selectedOption = selectedType.displayName,
+                onOptionSelected = {
+                    onTypeChange(SearchType.fromDisplayName(it))
+                }
+            )
+            GridDropdownSelector(
+                label = "Year",
+                options = yearOptions,
+                selectedOption = selectedYear,
+                onOptionSelected = onYearChange
+            )
+
+        }
+
     }
 }

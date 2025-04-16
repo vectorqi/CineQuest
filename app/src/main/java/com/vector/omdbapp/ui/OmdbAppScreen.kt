@@ -60,7 +60,11 @@ fun OmdbAppScreen() {
             SearchBar(
                 query = uiState.query,
                 onQueryChange = { newQuery -> viewModel.onQueryChange(newQuery) },
-                onSearchClick = { viewModel.searchMovies(context.getString(R.string.empty_query_message)) }
+                onSearchClick = { viewModel.searchMovies(context.getString(R.string.empty_query_message)) },
+                selectedYear = uiState.selectedYear,
+                onYearChange = viewModel::onYearChange,
+                selectedType = uiState.selectedType,
+                onTypeChange = viewModel::onTypeChange
             )
             when {
                 uiState.isLoading -> {

@@ -20,6 +20,8 @@ interface OmdbApi {
     suspend fun searchMovies(
         @Query("apikey") apiKey: String,
         @Query("s") query: String,
+        @Query("t") type: String,
+        @Query("y") year: String,
         @Query("page") page: Int
     ): OmdbSearchResponse
 }

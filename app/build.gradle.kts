@@ -13,12 +13,12 @@ tasks.withType<JavaCompile> {
 }
 android {
     namespace = "com.vector.omdbapp"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.vector.omdbapp"
         minSdk = 27
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -84,6 +84,5 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     kapt(libs.hilt.compiler)
-
 
 }

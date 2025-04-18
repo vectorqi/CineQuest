@@ -52,8 +52,8 @@ class MovieViewModel @Inject constructor(private val repository: MovieRepository
     private val _uiState = MutableStateFlow(MovieUiState())
     val uiState: StateFlow<MovieUiState> = _uiState
 
-    private val _labelStates = mutableStateMapOf<String, Boolean>()
-    val labelStates: Map<String, Boolean> get() = _labelStates
+    private val _favorStates = mutableStateMapOf<String, Boolean>()
+    val favorStates: Map<String, Boolean> get() = _favorStates
 
     private var _currentPage = firstPage        // Tracks which page we are currently loading
     private var isLoadingPage = false  // Prevents duplicate requests
@@ -63,17 +63,10 @@ class MovieViewModel @Inject constructor(private val repository: MovieRepository
     private var currentQuery: String = ""
 
     /**
-     * Toggles a movie's label visibility.
+     * Toggles a movie's favorite icon.
      */
-    fun toggleLabel(movieId: String) {
-        _labelStates[movieId] = !_labelStates.getOrDefault(movieId, false)
-    }
-
-    /**
-     * Determines the button text for showing/hiding labels.
-     */
-    fun getButtonText(movieId: String, showText: String, hideText:String): String {
-        return if (_labelStates.getOrDefault(movieId, false)) hideText else showText
+    fun toggleFavorite(movieId: String) {
+        _favorStates[movieId] = !_favorStates.getOrDefault(movieId, false)
     }
 
     /**

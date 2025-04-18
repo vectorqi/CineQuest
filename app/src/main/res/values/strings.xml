@@ -9,5 +9,6 @@
     <string name="show_label_button">Show Label</string>
     <string name="hide_label_button">Hide Label</string>
     <string name="year_label">Year: </string>
-    <string name="label_displayed">Label displayed</string>
+    <string name="icon_unfavor">Unfavorite</string>
+    <string name="icon_favor">Favorite</string>
 </resources>

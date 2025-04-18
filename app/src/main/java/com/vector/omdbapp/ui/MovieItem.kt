@@ -8,12 +8,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -36,12 +41,7 @@ import com.vector.omdbapp.viewmodel.MovieViewModel
 @Composable
 fun MovieItem(movie: Movie, viewModel: MovieViewModel) {
     val context = LocalContext.current
-    val isLabelVisible = viewModel.labelStates[movie.imdbID] == true
-
-    val showLabel = context.getString(R.string.show_label_button)
-    val hideLabel = context.getString(R.string.hide_label_button)
-
-    val buttonText = viewModel.getButtonText(movie.imdbID,showLabel,hideLabel)
+    val isFavorite = viewModel.favorStates[movie.imdbID] == true
 
     // Create a custom image loader with disk and memory caching enabled
     val customImageLoader = ImageLoader.Builder(context)
@@ -85,18 +85,13 @@ fun MovieItem(movie: Movie, viewModel: MovieViewModel) {
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-
-            if (isLabelVisible) {
-                Text(
-                    text = context.getString(R.string.label_displayed),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
         }
-
-        Button(onClick = { viewModel.toggleLabel(movie.imdbID) }) {
-            Text(buttonText)
+        IconButton(onClick = { viewModel.toggleFavorite(movie.imdbID) }) {
+            Icon(
+                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                contentDescription = if (isFavorite) context.getString(R.string.icon_unfavor)else context.getString(R.string.icon_favor),
+                tint = if (isFavorite) MaterialTheme.colorScheme.primary else Color.Gray
+            )
         }
     }
 }

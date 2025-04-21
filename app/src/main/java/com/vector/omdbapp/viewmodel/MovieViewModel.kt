@@ -1,17 +1,23 @@
 package com.vector.omdbapp.viewmodel
 
-import androidx.compose.runtime.mutableStateMapOf
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vector.omdbapp.data.db.FavoriteMovieDao
 import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.data.model.TypeFilter
 import com.vector.omdbapp.data.model.YearFilter
+import com.vector.omdbapp.data.model.toDomain
 import com.vector.omdbapp.data.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,8 +34,6 @@ import javax.inject.Inject
  * @param noMoreData True when we've loaded all possible data.
  * @param totalResults Number of total hits reported by OMDB.
  */
-
-
 data class MovieUiState(
     val query: String = "",
     val selectedYear: String = YearFilter.ALL,
@@ -44,17 +48,17 @@ data class MovieUiState(
 )
 
 /**
- * ViewModel manages the search, pagination, and label states.
+ * Main ViewModel for the OMDB app, responsible for managing state, search, pagination,
+ * and favorite movie logic. Utilizes Hilt for dependency injection.
  */
 @HiltViewModel
-class MovieViewModel @Inject constructor(private val repository: MovieRepository) : ViewModel()  {
+class MovieViewModel @Inject constructor(
+    private val repository: MovieRepository,
+    private val favoriteMovieDao: FavoriteMovieDao
+) : ViewModel()  {
     private val firstPage = 1
     private val _uiState = MutableStateFlow(MovieUiState())
     val uiState: StateFlow<MovieUiState> = _uiState
-
-    private val _favorStates = mutableStateMapOf<String, Boolean>()
-    val favorStates: Map<String, Boolean> get() = _favorStates
-
     private var _currentPage = firstPage        // Tracks which page we are currently loading
     private var isLoadingPage = false  // Prevents duplicate requests
     private val _snackbarChannel = Channel<String>(Channel.BUFFERED)  // Channel for snackbar messages
@@ -63,12 +67,36 @@ class MovieViewModel @Inject constructor(private val repository: MovieRepository
     private var currentQuery: String = ""
 
     /**
+     * A flow representing the current list of favorite movies, derived from Room.
+     * Automatically updates in response to changes in the database.
+     */
+    val favoriteList: StateFlow<List<Movie>> = favoriteMovieDao
+        .getAllFavorites()
+        .map { list -> list.map { it.toDomain() } }
+        .onEach { favorites ->
+            Log.d("FavoriteList", "🍿 current favorite count: ${favorites.size}")
+            favorites.forEach {
+                Log.d("FavoriteList", "❤️ ${it.title} (${it.year})")
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    /**
      * Toggles a movie's favorite icon.
      */
-    fun toggleFavorite(movieId: String) {
-        _favorStates[movieId] = !_favorStates.getOrDefault(movieId, false)
-    }
+//    fun toggleFavorite(movieId: String) {
+//        _favorStates[movieId] = !_favorStates.getOrDefault(movieId, false)
+//    }
+    fun toggleFavorite(movie: Movie) {
+        viewModelScope.launch {
+            val isAlreadyFavorite = repository.isFavorite(movie.imdbID)
 
+            if (isAlreadyFavorite) {
+                repository.removeFavorite(movie.imdbID)
+            } else {
+                repository.addFavorite(movie)
+            }
+        }
+    }
     /**
      * Updates the search query in the UI state.
      */
@@ -231,4 +259,5 @@ class MovieViewModel @Inject constructor(private val repository: MovieRepository
             _uiState.update { it.copy(noMoreData = true) }
         }
     }
+
 }

@@ -25,9 +25,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import com.vector.omdbapp.R
 
 @Composable
 fun GridDropdownSelector(
@@ -38,6 +40,7 @@ fun GridDropdownSelector(
     modifier: Modifier = Modifier,
     columns: Int = 3
 ) {
+    val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
 
     Column(modifier = modifier.padding(5.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -46,11 +49,11 @@ fun GridDropdownSelector(
             Button(modifier =
                 Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray,      // Background Color
+                    containerColor = Color.LightGray,      // Background Color
                     contentColor = Color.White        // Text Color
                 ),
                 onClick = { expanded = true }) {
-                Text(selectedOption.ifBlank { "Select" })
+                Text(selectedOption.ifBlank { context.getString(R.string.grid_dps_blank) })
             }
 
             //Custom Popup dropdown menu

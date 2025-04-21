@@ -1,6 +1,7 @@
 package com.vector.omdbapp.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.vector.omdbapp.data.db.FavoriteMovieEntity
 
 data class Movie(
     @SerializedName("Title")
@@ -28,4 +29,20 @@ data class OmdbSearchResponse(
     val response: String?,
     @SerializedName("Error")
     val error: String?
+)
+
+fun Movie.toFavoriteEntity(): FavoriteMovieEntity = FavoriteMovieEntity(
+    imdbID = imdbID,
+    title = title,
+    year = year,
+    posterUrl = posterUrl,
+    type = type
+)
+
+fun FavoriteMovieEntity.toDomain(): Movie = Movie(
+    imdbID = imdbID,
+    title = title,
+    year = year,
+    posterUrl = posterUrl,
+    type = type
 )

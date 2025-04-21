@@ -34,40 +34,42 @@ import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.viewmodel.MovieViewModel
 
 /**
- * MovieItem.kt
+ * FavoriteMovieItem.kt
  *
- * Composable representing a single movie item in the list.
- * Displays poster, title, year, and a toggleable label with a control button.
- * Uses Coil for image loading with placeholders.
+ * This composable represents a single movie item in the list of favorites.
+ * It displays the poster image, title, release year, and a favorite toggle button.
+ * Consistent with the MovieItem layout.
+ *
+ * @param movie The movie to be displayed.
+ * @param viewModel Reference to the ViewModel that manages favorite logic.
  */
-
 @Composable
-fun MovieItem(movie: Movie, viewModel: MovieViewModel) {
+fun FavoriteMovieItem(
+    movie: Movie,
+    viewModel: MovieViewModel
+) {
     val context = LocalContext.current
     val favoriteList by viewModel.favoriteList.collectAsState()
     val isFavorite = favoriteList.any { it.imdbID == movie.imdbID }
-
-    // Create a custom image loader with disk and memory caching enabled
     val customImageLoader = ImageLoader.Builder(context)
         .crossfade(true)
         .diskCachePolicy(CachePolicy.ENABLED)
         .memoryCachePolicy(CachePolicy.ENABLED)
         .build()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // Provide a placeholder image if the poster is loading or fails
         AsyncImage(
             model = ImageRequest.Builder(context)
                 .data(movie.posterUrl)
                 .placeholder(R.drawable.loading)
                 .error(R.drawable.error)
                 .size(128, 192)
-
                 .build(),
             imageLoader = customImageLoader,
             contentDescription = movie.title,
@@ -84,16 +86,20 @@ fun MovieItem(movie: Movie, viewModel: MovieViewModel) {
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = context.getString(R.string.year_label) + movie.year,
+                text = stringResource(R.string.year_label) + movie.year,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }
+
         IconButton(onClick = { viewModel.toggleFavorite(movie) }) {
             Icon(
                 imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                contentDescription = if (isFavorite) stringResource(R.string.icon_unfavor)else stringResource(R.string.icon_favor),
+                contentDescription = if (isFavorite)
+                    stringResource(R.string.icon_unfavor)
+                else
+                    stringResource(R.string.icon_favor),
                 tint = if (isFavorite) MaterialTheme.colorScheme.primary else Color.Gray
             )
         }

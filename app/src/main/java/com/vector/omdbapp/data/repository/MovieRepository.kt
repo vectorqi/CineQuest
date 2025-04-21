@@ -1,6 +1,9 @@
 package com.vector.omdbapp.data.repository
 
+import com.vector.omdbapp.data.db.FavoriteMovieDao
+import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.data.model.MovieSearchResult
+import com.vector.omdbapp.data.model.toFavoriteEntity
 import com.vector.omdbapp.data.remote.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -16,7 +19,7 @@ import javax.inject.Singleton
  *       Exposing secrets can lead to security risks and potential abuse of your key.
  */
 @Singleton
-class MovieRepository @Inject constructor(){
+class MovieRepository @Inject constructor(private val favoriteMovieDao: FavoriteMovieDao){
 
     /**
      * Hard-coded OMDB API key:
@@ -54,5 +57,16 @@ class MovieRepository @Inject constructor(){
                 Result.failure(Exception("Failed to fetch movies: ${e.message}"))
             }
         }
+    }
+    suspend fun isFavorite(imdbID: String): Boolean {
+        return favoriteMovieDao.isFavorite(imdbID)
+    }
+
+    suspend fun addFavorite(movie: Movie) {
+        favoriteMovieDao.addFavorite(movie.toFavoriteEntity())
+    }
+
+    suspend fun removeFavorite(imdbID: String) {
+        favoriteMovieDao.removeFavoriteById(imdbID)
     }
 }

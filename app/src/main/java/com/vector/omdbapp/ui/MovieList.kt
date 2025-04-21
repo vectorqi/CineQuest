@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -34,12 +34,10 @@ import kotlinx.coroutines.flow.debounce
  */
 
 @Composable
-fun MovieList() {
+fun MovieList(listState: LazyListState) {
     val viewModel: MovieViewModel = hiltViewModel()
     // Collect the UI state from the ViewModel
     val uiState by viewModel.uiState.collectAsState()
-    // LazyListState keeps track of the scroll position in LazyColumn
-    val listState = rememberLazyListState()
     val context = LocalContext.current
     /**
      * Scroll detection logic:

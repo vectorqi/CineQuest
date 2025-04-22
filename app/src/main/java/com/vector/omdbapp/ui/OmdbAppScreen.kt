@@ -51,6 +51,7 @@ fun OmdbAppScreen() {
     val scope = rememberCoroutineScope()
     // Tracks the current selected tab
     var selectedTab by rememberSaveable { mutableStateOf(BottomNavItem.Home) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -92,58 +93,4 @@ fun OmdbAppScreen() {
             }
         }
     }
-
-    // Scaffold with top bar and snackbar
-//    Scaffold(topBar = {
-//        TopAppBar(title = { Text(context.getString(R.string.app_title)) })
-//    },snackbarHost = { SnackbarHost(hostState = snackbarHostState) })
-//    {
-//        Column(modifier = Modifier.padding(it).fillMaxSize()) {
-//            SearchBar(
-//                query = uiState.query,
-//                onQueryChange = { newQuery -> viewModel.onQueryChange(newQuery) },
-//                onSearchClick = { viewModel.searchMovies(context.getString(R.string.empty_query_message)) },
-//                selectedYear = uiState.selectedYear,
-//                onYearChange = viewModel::onYearChange,
-//                selectedType = uiState.selectedType,
-//                onTypeChange = viewModel::onTypeChange
-//            )
-//            when {
-//                uiState.isLoading -> {
-//                    Box(
-//                        contentAlignment = Alignment.Center,
-//                        modifier = Modifier.fillMaxSize()
-//                    ) {
-//                        CircularProgressIndicator()
-//                    }
-//                }
-//                uiState.errorMessage != null -> {
-//                    Text(
-//                        text = context.getString(R.string.error_label) + uiState.errorMessage,
-//                        modifier = Modifier.padding(16.dp),
-//                        style = MaterialTheme.typography.bodyLarge
-//                    )
-//                }
-//                else -> {
-//                    val pullRefreshState = rememberPullRefreshState(
-//                        refreshing = uiState.isRefreshing,
-//                        onRefresh = { viewModel.refreshMovies() }
-//                    )
-//
-//                    Box(modifier = Modifier
-//                        .fillMaxSize()
-//                        .pullRefresh(pullRefreshState)
-//                    ) {
-//                        MovieList()
-//
-//                        PullRefreshIndicator(
-//                            refreshing = uiState.isRefreshing,
-//                            state = pullRefreshState,
-//                            modifier = Modifier.align(Alignment.TopCenter)
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//    }
 }

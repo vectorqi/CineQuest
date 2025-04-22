@@ -78,7 +78,7 @@ fun SearchBar(
             val typeOptions = TypeFilter.displayNames()
             val yearOptions = YearFilter.generateYearOptions()
             GridDropdownSelector(
-                label = "Type",
+                label =  context.getString(R.string.filter_type),
                 options = typeOptions,
                 selectedOption = selectedType.displayName,
                 onOptionSelected = {
@@ -88,7 +88,7 @@ fun SearchBar(
             )
 
             GridDropdownSelector(
-                label = "Year",
+                label = context.getString(R.string.filter_year),
                 options = yearOptions,
                 selectedOption = selectedYear,
                 onOptionSelected = onYearChange,

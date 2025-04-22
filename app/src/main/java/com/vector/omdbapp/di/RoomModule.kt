@@ -6,6 +6,7 @@ import com.vector.omdbapp.data.db.FavoriteMovieDao
 import com.vector.omdbapp.data.db.MovieDatabase
 import com.vector.omdbapp.data.remote.OmdbApi
 import com.vector.omdbapp.data.remote.RetrofitClient
+import com.vector.omdbapp.data.repository.MovieRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,6 +31,12 @@ object RoomModule {
 
     @Provides
     @Singleton
-    fun provideOmdbApi(): OmdbApi =
-        RetrofitClient.api
+    fun provideOmdbApi(): OmdbApi = RetrofitClient.api
+
+    @Provides
+    @Singleton
+    fun provideMovieRepository(
+        api: OmdbApi,
+        dao: FavoriteMovieDao
+    ): MovieRepository = MovieRepository(api,dao)
 }

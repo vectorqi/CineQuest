@@ -43,7 +43,7 @@ fun SearchBar(
     val keyboardController = LocalSoftwareKeyboardController.current
     // Limit the input to 30 characters
     val maxCharacters = 30
-    Column(){
+    Column{
     Row(
         modifier = Modifier
             .padding(8.dp)

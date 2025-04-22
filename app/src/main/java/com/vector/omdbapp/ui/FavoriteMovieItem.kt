@@ -25,13 +25,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.vector.omdbapp.R
 import com.vector.omdbapp.data.model.Movie
-import com.vector.omdbapp.viewmodel.MovieViewModel
+import com.vector.omdbapp.viewmodel.FavoriteViewModel
 
 /**
  * FavoriteMovieItem.kt
@@ -41,14 +42,13 @@ import com.vector.omdbapp.viewmodel.MovieViewModel
  * Consistent with the MovieItem layout.
  *
  * @param movie The movie to be displayed.
- * @param viewModel Reference to the ViewModel that manages favorite logic.
  */
 @Composable
 fun FavoriteMovieItem(
-    movie: Movie,
-    viewModel: MovieViewModel
+    movie: Movie
 ) {
     val context = LocalContext.current
+    val viewModel: FavoriteViewModel = hiltViewModel()
     val favoriteList by viewModel.favoriteList.collectAsState()
     val isFavorite = favoriteList.any { it.imdbID == movie.imdbID }
     val customImageLoader = ImageLoader.Builder(context)

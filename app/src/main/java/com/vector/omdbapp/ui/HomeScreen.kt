@@ -34,7 +34,7 @@ fun HomeScreen(viewModel: MovieViewModel = hiltViewModel(),
                listState: LazyListState
 ) {
     val context = LocalContext.current
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.homeUiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 

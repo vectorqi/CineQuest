@@ -94,6 +94,6 @@ dependencies {
     kapt(libs.hilt.compiler)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
+    kapt(libs.room.compiler)//Hilt library doesn't support ksp yet.
 
 }

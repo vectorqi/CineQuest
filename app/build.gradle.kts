@@ -5,12 +5,19 @@ plugins {
     alias(libs.plugins.hilt)
     id("org.jetbrains.kotlin.kapt")
 }
+
 hilt {
     enableAggregatingTask = false
 }
+
 tasks.withType<JavaCompile> {
     options.compilerArgs.add("-Xlint:deprecation")
 }
+
+tasks.withType<Test> {
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
+}
+
 android {
     namespace = "com.vector.omdbapp"
     compileSdk = 36
@@ -46,6 +53,7 @@ android {
         compose = true
     }
 }
+
 kapt {
     arguments {
         arg("room.schemaLocation", "$projectDir/schemas")
@@ -68,6 +76,9 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.androidx.media3.common.ktx)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.turbine)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

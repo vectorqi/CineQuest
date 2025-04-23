@@ -1,7 +1,6 @@
 package com.vector.omdbapp.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,7 +65,7 @@ fun GridDropdownSelector(
                     Surface(
                         modifier = Modifier
                             .padding(top = 4.dp)
-                            .border(1.dp, MaterialTheme.colorScheme.outline)
+//                            .border(1.dp, MaterialTheme.colorScheme.outline)
                             .background(MaterialTheme.colorScheme.surface)
                             .width(240.dp)
                             .heightIn(max = 240.dp),

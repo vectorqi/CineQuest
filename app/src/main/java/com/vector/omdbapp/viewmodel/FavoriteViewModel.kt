@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,6 +36,10 @@ class FavoriteViewModel @Inject constructor(
         viewModelScope.launch {
             favoriteMovieDao.getAllFavorites()
                 .map { list -> list.map { it.toDomain() } }
+                .catch {  // catch any unexpected error from DAO
+                    _favoriteList.value = emptyList()  // Fallback to empty
+                    _isLoading.value = false
+                }
                 .collect { movies ->
                     _favoriteList.value = movies
                     _isLoading.value = false

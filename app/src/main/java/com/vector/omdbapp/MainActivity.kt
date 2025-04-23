@@ -8,6 +8,7 @@ import androidx.core.view.WindowCompat
 import com.vector.omdbapp.ui.OmdbAppScreen
 import dagger.hilt.android.AndroidEntryPoint
 
+@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

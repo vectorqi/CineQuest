@@ -25,6 +25,7 @@ data class MovieDetailResponse(
     @SerializedName("BoxOffice") val boxOffice: String,
     @SerializedName("Production") val production: String,
     @SerializedName("imdbID") val imdbID: String,
+    @SerializedName("totalSeasons") val totalSeasons: String,
     @SerializedName("Type") val type: String,
     @SerializedName("Response") val response: String,
     @SerializedName("Error") val error: String? = null
@@ -48,6 +49,7 @@ data class MovieDetailResponse(
         boxOffice = boxOffice,
         production = production,
         imdbID = imdbID,
+        totalSeasons = totalSeasons,
         type = type
     )
 }

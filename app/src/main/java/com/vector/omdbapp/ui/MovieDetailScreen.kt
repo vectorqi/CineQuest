@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -112,7 +111,6 @@ fun MovieDetailScreen(
                         contentScale = ContentScale.FillWidth,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .aspectRatio(1f)
                             .clickable {
                                 val encodedUrl = Uri.encode(movie.posterUrl)
                                 navController.navigate("poster/$encodedUrl")
@@ -131,18 +129,18 @@ fun MovieDetailScreen(
                     Column(modifier = Modifier.padding(16.dp)) {
                         // Section: Basic Info
                         Text("Basic Info", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
-                        DetailItem("Year", movie.year)
-                        DetailItem("Rated", movie.rated)
-                        DetailItem("Released", movie.released)
-                        DetailItem("Runtime", movie.runtime)
-                        DetailItem("Genre", movie.genre)
+                        DetailItem("Year", movie.year.toString())
+                        DetailItem("Rated", movie.rated.toString())
+                        DetailItem("Released", movie.released.toString())
+                        DetailItem("Runtime", movie.runtime.toString())
+                        DetailItem("Genre", movie.genre.toString())
 
                         Spacer(modifier = Modifier.height(8.dp))
                         // Section: Credits
                         Text("Credits", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
-                        DetailItem("Director", movie.director)
-                        DetailItem("Writer", movie.writer)
-                        DetailItem("Actors", movie.actors)
+                        DetailItem("Director", movie.director.toString())
+                        DetailItem("Writer", movie.writer.toString())
+                        DetailItem("Actors", movie.actors.toString())
 
                         Spacer(modifier = Modifier.height(8.dp))
                         // Section: Description
@@ -152,12 +150,12 @@ fun MovieDetailScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         // Section: More Details
                         Text("Details", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
-                        DetailItem("Language", movie.language)
-                        DetailItem("Country", movie.country)
-                        DetailItem("Awards", movie.awards)
-                        DetailItem("IMDB Rating", movie.imdbRating)
-                        DetailItem("BoxOffice", movie.boxOffice)
-                        DetailItem("Production", movie.production)
+                        DetailItem("Language", movie.language.toString())
+                        DetailItem("Country", movie.country.toString())
+                        DetailItem("Awards", movie.awards.toString())
+                        DetailItem("IMDB Rating", movie.imdbRating.toString())
+                        DetailItem("BoxOffice", movie.boxOffice.toString())
+                        DetailItem("Production", movie.production.toString())
                     }
                 }
             }
@@ -183,6 +181,7 @@ private fun DetailItem(label: String, value: String) {
             fontSize = 16.sp,
             modifier = Modifier.width(120.dp)
         )
-        Text(text = value, fontSize = 16.sp)
+        Text(text = if (value.isBlank() || value == "N/A"|| value == "null") "Unknown" else value,
+            fontSize = 16.sp)
     }
 }

@@ -66,7 +66,6 @@ fun SearchBar(
         Spacer(modifier = Modifier.width(8.dp))
         // Button to trigger the search
         Button(onClick = {
-            // Hide the keyboard
             keyboardController?.hide()
             onSearchClick()
         }

@@ -11,6 +11,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +30,15 @@ import com.vector.omdbapp.R
 import com.vector.omdbapp.viewmodel.MovieViewModel
 import kotlinx.coroutines.launch
 
+/**
+ * The main screen displaying a list of movies based on user search criteria.
+ * Features include a search bar with year and type filters, loading and error states,
+ * pull-to-refresh functionality, and navigation to movie details.
+ *
+ * @param viewModel The [MovieViewModel] responsible for managing the UI state and fetching movie data.
+ * @param listState The [LazyListState] to control the scrolling position of the movie list.
+ * @param navController The [NavHostController] for navigating to other screens, such as movie details.
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
@@ -49,54 +59,62 @@ fun HomeScreen(
             }
         }
     }
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        SearchBar(
-            query = uiState.query,
-            onQueryChange = viewModel::onQueryChange,
-            onSearchClick = {
-                viewModel.searchMovies(context.getString(R.string.empty_query_message))
-            },
-            selectedYear = uiState.selectedYear,
-            onYearChange = viewModel::onYearChange,
-            selectedType = uiState.selectedType,
-            onTypeChange = viewModel::onTypeChange
+    Box(modifier = Modifier.fillMaxSize()) {
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
         )
 
-        when {
-            uiState.isLoading -> {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    CircularProgressIndicator()
+        Column(modifier = Modifier.fillMaxSize()) {
+            SearchBar(
+                query = uiState.query,
+                onQueryChange = viewModel::onQueryChange,
+                onSearchClick = {
+                    viewModel.searchMovies()
+                },
+                selectedYear = uiState.selectedYear,
+                onYearChange = viewModel::onYearChange,
+                selectedType = uiState.selectedType,
+                onTypeChange = viewModel::onTypeChange
+            )
+
+            when {
+                uiState.isLoading -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
-            }
-            uiState.errorMessage != null -> {
-                Text(
-                    text = context.getString(R.string.error_label) + uiState.errorMessage,
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-            else -> {
-                val pullRefreshState = rememberPullRefreshState(
-                    refreshing = uiState.isRefreshing,
-                    onRefresh = { viewModel.refreshMovies() }
-                )
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .pullRefresh(pullRefreshState)
-                ) {
-                    MovieList(listState,navController)
-
-                    PullRefreshIndicator(
-                        refreshing = uiState.isRefreshing,
-                        state = pullRefreshState,
-                        modifier = Modifier.align(Alignment.TopCenter)
+                uiState.errorMessage != null -> {
+                    Text(
+                        text = context.getString(R.string.error_label) + uiState.errorMessage,
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.bodyLarge
                     )
+                }
+
+                else -> {
+                    val pullRefreshState = rememberPullRefreshState(
+                        refreshing = uiState.isRefreshing,
+                        onRefresh = { viewModel.refreshMovies() }
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .pullRefresh(pullRefreshState)
+                    ) {
+                        MovieList(listState, navController)
+
+                        PullRefreshIndicator(
+                            refreshing = uiState.isRefreshing,
+                            state = pullRefreshState,
+                            modifier = Modifier.align(Alignment.TopCenter)
+                        )
+                    }
                 }
             }
         }

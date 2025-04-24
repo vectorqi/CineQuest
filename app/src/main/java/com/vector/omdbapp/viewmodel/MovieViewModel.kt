@@ -1,7 +1,9 @@
 package com.vector.omdbapp.viewmodel
 
+import android.content.res.Resources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vector.omdbapp.R
 import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.data.model.TypeFilter
 import com.vector.omdbapp.data.model.YearFilter
@@ -22,7 +24,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class MovieViewModel @Inject constructor(
-    private val repository: MovieRepository
+    private val repository: MovieRepository,
+    private val resources: Resources
 ) : ViewModel()  {
     private val firstPage = 1
     private val _homeUiState = MutableStateFlow(HomeUiState())
@@ -37,12 +40,12 @@ class MovieViewModel @Inject constructor(
     /**
      * Initiates a new search, resets pagination state, and loads the first page.
      */
-    fun searchMovies(emptyQueryMessage: String) {
+    fun searchMovies() {
         val query = _homeUiState.value.query.trim()
         // Avoid empty queries
         if (query.isEmpty()) {
             viewModelScope.launch {
-                _snackbarChannel.send(emptyQueryMessage)
+                _snackbarChannel.send(resources.getString(R.string.empty_query_message))
             }
             return
         }

@@ -41,6 +41,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.vector.omdbapp.R
+import com.vector.omdbapp.navigation.Screen
 import com.vector.omdbapp.viewmodel.DetailViewModel
 
 /**
@@ -114,7 +115,7 @@ fun MovieDetailScreen(
                             .fillMaxWidth()
                             .clickable {
                                 val encodedUrl = Uri.encode(movie.posterUrl)
-                                navController.navigate("poster/$encodedUrl")
+                                navController.navigate(Screen.Poster.createRoute(encodedUrl))
                             }
                     )
                     Text(

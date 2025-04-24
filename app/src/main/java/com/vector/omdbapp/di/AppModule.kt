@@ -1,6 +1,7 @@
 package com.vector.omdbapp.di
 
 import android.content.Context
+import android.content.res.Resources
 import androidx.room.Room
 import com.vector.omdbapp.data.db.FavoriteMovieDao
 import com.vector.omdbapp.data.db.MovieDatabase
@@ -16,7 +17,13 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RoomModule {
+object AppModule {
+    @Provides
+    @Singleton
+    fun provideResources(@ApplicationContext applicationContext: Context): Resources {
+        return applicationContext.resources
+    }
+
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): MovieDatabase =

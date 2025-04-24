@@ -1,0 +1,188 @@
+package com.vector.omdbapp.ui
+
+import android.net.Uri
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.vector.omdbapp.R
+import com.vector.omdbapp.viewmodel.DetailViewModel
+
+/**
+ * A detailed movie screen displaying full information about the movie.
+ * The screen supports back navigation, toggling favorites, and viewing the poster in full.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MovieDetailScreen(
+    imdbId: String,
+    navController: NavController,
+    viewModel: DetailViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+) {
+    val uiState by viewModel.detailUiState.collectAsState()
+    val context = LocalContext.current
+
+    // Trigger detail loading when component is first composed
+    LaunchedEffect(imdbId) {
+        viewModel.loadMovieDetail(imdbId)
+    }
+
+    if (uiState.isLoading) {
+        // Show loading indicator while fetching data
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else {
+        uiState.movie?.let { movie ->
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = { Text("Movie Detail",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center) },
+                        navigationIcon = {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = { viewModel.toggleFavorite(movie) }) {
+                                Icon(
+                                    imageVector = if (uiState.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                                    contentDescription = "Toggle Favorite"
+                                )
+                            }
+                        }
+                    )
+                },
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(0.dp)
+            ) { innerPadding ->
+                Column(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    // Poster image with clickable navigation to zoom view
+                    AsyncImage(
+                        model = ImageRequest.Builder(context)
+                            .data(movie.posterUrl)
+                            .placeholder(R.drawable.loading)
+                            .error(R.drawable.error)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = "Poster",
+                        contentScale = ContentScale.FillWidth,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .clickable {
+                                val encodedUrl = Uri.encode(movie.posterUrl)
+                                navController.navigate("poster/$encodedUrl")
+                            }
+                    )
+                    Text(
+                        text = movie.title,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .padding(16.dp,16.dp,16.dp,0.dp)
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Start
+                    )
+                    // Grouped movie detail info
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        // Section: Basic Info
+                        Text("Basic Info", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
+                        DetailItem("Year", movie.year)
+                        DetailItem("Rated", movie.rated)
+                        DetailItem("Released", movie.released)
+                        DetailItem("Runtime", movie.runtime)
+                        DetailItem("Genre", movie.genre)
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        // Section: Credits
+                        Text("Credits", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
+                        DetailItem("Director", movie.director)
+                        DetailItem("Writer", movie.writer)
+                        DetailItem("Actors", movie.actors)
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        // Section: Description
+                        Text("Description", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
+                        DetailItem("Plot", movie.plot)
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        // Section: More Details
+                        Text("Details", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
+                        DetailItem("Language", movie.language)
+                        DetailItem("Country", movie.country)
+                        DetailItem("Awards", movie.awards)
+                        DetailItem("IMDB Rating", movie.imdbRating)
+                        DetailItem("BoxOffice", movie.boxOffice)
+                        DetailItem("Production", movie.production)
+                    }
+                }
+            }
+        } ?: Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Movie not found or error occurred.")
+        }
+    }
+}
+
+/**
+ * A single labeled detail item with consistent formatting.
+ * Used in grouped sections on the detail screen.
+ */
+@Composable
+private fun DetailItem(label: String, value: String) {
+    Row(modifier = Modifier.padding(vertical = 4.dp)) {
+        Text(
+            text = "$label:",
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            modifier = Modifier.width(120.dp)
+        )
+        Text(text = value, fontSize = 16.sp)
+    }
+}

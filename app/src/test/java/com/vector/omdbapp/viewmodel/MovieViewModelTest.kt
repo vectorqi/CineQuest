@@ -1,7 +1,7 @@
 package com.vector.omdbapp.viewmodel
 
 import com.vector.omdbapp.data.model.Movie
-import com.vector.omdbapp.data.model.MovieSearchResult
+import com.vector.omdbapp.data.remote.response.MovieSearchResponse
 import com.vector.omdbapp.data.repository.MovieRepository
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -42,7 +42,7 @@ class MovieViewModelTest {
     @Test
     fun `searchMovies updates ui state on success`() = runTest {
         coEvery { repository.searchMovies("Batman", any(), any(), any()) } returns Result.success(
-            MovieSearchResult(listOf(movie), 1)
+            MovieSearchResponse(listOf(movie), 1)
         )
 
         viewModel.onQueryChange("Batman")
@@ -71,7 +71,7 @@ class MovieViewModelTest {
     @Test
     fun `refreshMovies sets refreshing flag then clears it`() = runTest {
         coEvery { repository.searchMovies("Batman", any(), any(), any()) } returns Result.success(
-            MovieSearchResult(listOf(movie), 1)
+            MovieSearchResponse(listOf(movie), 1)
         )
 
         viewModel.onQueryChange("Batman")

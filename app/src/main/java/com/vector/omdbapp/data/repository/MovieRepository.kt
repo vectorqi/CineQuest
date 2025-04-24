@@ -2,7 +2,8 @@ package com.vector.omdbapp.data.repository
 
 import com.vector.omdbapp.data.db.FavoriteMovieDao
 import com.vector.omdbapp.data.model.Movie
-import com.vector.omdbapp.data.model.MovieSearchResult
+import com.vector.omdbapp.data.model.MovieDetail
+import com.vector.omdbapp.data.remote.response.MovieSearchResponse
 import com.vector.omdbapp.data.model.toFavoriteEntity
 import com.vector.omdbapp.data.remote.OmdbApi
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +39,7 @@ class MovieRepository @Inject constructor(
      * @param page The page number for pagination.
      * @return A Result wrapping MovieSearchResult on success, or an Exception on failure.
      */
-    suspend fun searchMovies(query: String, type: String, year: String, page: Int = 1): Result<MovieSearchResult> {
+    suspend fun searchMovies(query: String, type: String, year: String, page: Int = 1): Result<MovieSearchResponse> {
         return withContext(Dispatchers.IO) {
             try {
                 val response = api.searchMovies(apiKey, query, type, year, page)
@@ -46,7 +47,7 @@ class MovieRepository @Inject constructor(
                     // Parse totalResults; if null or invalid, default to 0
                     val totalCount = response.totalResults?.toIntOrNull() ?: 0
                     // Wrap the movies and total count in a MovieSearchResult
-                    val searchResult = MovieSearchResult(
+                    val searchResult = MovieSearchResponse(
                         movies = response.movies,
                         totalResults = totalCount
                     )
@@ -60,6 +61,22 @@ class MovieRepository @Inject constructor(
             }
         }
     }
+
+    suspend fun getMovieDetail(imdbId: String): Result<MovieDetail> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = api.getMovieDetail(apiKey, imdbId, "full")
+                if (response.response == "True") {
+                    Result.success(response.toDomain())
+                } else {
+                    Result.failure(Exception(response.error ?: "Failed to fetch movie detail"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
     suspend fun isFavorite(imdbID: String): Boolean {
         return favoriteMovieDao.isFavorite(imdbID)
     }

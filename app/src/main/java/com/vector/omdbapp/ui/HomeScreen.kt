@@ -24,15 +24,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.vector.omdbapp.R
 import com.vector.omdbapp.viewmodel.MovieViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun HomeScreen(viewModel: MovieViewModel = hiltViewModel(),
-               listState: LazyListState
-) {
+fun HomeScreen(
+    viewModel: MovieViewModel = hiltViewModel(),
+    listState: LazyListState,
+    navController: NavHostController,
+    ) {
     val context = LocalContext.current
     val uiState by viewModel.homeUiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -87,7 +90,7 @@ fun HomeScreen(viewModel: MovieViewModel = hiltViewModel(),
                         .fillMaxSize()
                         .pullRefresh(pullRefreshState)
                 ) {
-                    MovieList(listState)
+                    MovieList(listState,navController)
 
                     PullRefreshIndicator(
                         refreshing = uiState.isRefreshing,

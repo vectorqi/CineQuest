@@ -1,5 +1,6 @@
 package com.vector.omdbapp.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,12 +28,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.vector.omdbapp.R
 import com.vector.omdbapp.data.model.Movie
+import com.vector.omdbapp.navigation.Screen
 import com.vector.omdbapp.viewmodel.FavoriteViewModel
 
 /**
@@ -45,63 +49,71 @@ import com.vector.omdbapp.viewmodel.FavoriteViewModel
  */
 @Composable
 fun FavoriteMovieItem(
-    movie: Movie
+    movie: Movie,
+    navController: NavController
 ) {
-    val context = LocalContext.current
-    val viewModel: FavoriteViewModel = hiltViewModel()
-    val favoriteList by viewModel.favoriteList.collectAsState()
-    val isFavorite = favoriteList.any { it.imdbID == movie.imdbID }
-    val customImageLoader = ImageLoader.Builder(context)
-        .crossfade(true)
-        .diskCachePolicy(CachePolicy.ENABLED)
-        .memoryCachePolicy(CachePolicy.ENABLED)
-        .build()
-
-    Row(
+    Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .clickable {
+                navController.navigate(Screen.MovieDetail.createRoute(movie.imdbID))
+            }
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(context)
-                .data(movie.posterUrl)
-                .placeholder(R.drawable.loading)
-                .error(R.drawable.error)
-                .size(128, 192)
-                .build(),
-            imageLoader = customImageLoader,
-            contentDescription = movie.title,
-            modifier = Modifier.size(80.dp)
-        )
+        val context = LocalContext.current
+        val viewModel: FavoriteViewModel = hiltViewModel()
+        val favoriteList by viewModel.favoriteList.collectAsState()
+        val isFavorite = favoriteList.any { it.imdbID == movie.imdbID }
+        val customImageLoader = ImageLoader.Builder(context)
+            .crossfade(true)
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .build()
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            AsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data(movie.posterUrl)
+                    .placeholder(R.drawable.loading)
+                    .error(R.drawable.error)
+                    .size(128, 192)
+                    .build(),
+                imageLoader = customImageLoader,
+                contentDescription = movie.title,
+                modifier = Modifier.size(80.dp)
+            )
 
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = movie.title,
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = stringResource(R.string.year_label) + movie.year,
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+            Spacer(modifier = Modifier.width(8.dp))
 
-        IconButton(onClick = { viewModel.toggleFavorite(movie) }) {
-            Icon(
-                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                contentDescription = if (isFavorite)
-                    stringResource(R.string.icon_unfavor)
-                else
-                    stringResource(R.string.icon_favor),
-                tint = if (isFavorite) MaterialTheme.colorScheme.primary else Color.Gray
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = movie.title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = stringResource(R.string.year_label) + movie.year,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            IconButton(onClick = { viewModel.toggleFavorite(movie) }) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                    contentDescription = if (isFavorite)
+                        stringResource(R.string.icon_unfavor)
+                    else
+                        stringResource(R.string.icon_favor),
+                    tint = if (isFavorite) MaterialTheme.colorScheme.primary else Color.Gray
+                )
+            }
         }
     }
 }

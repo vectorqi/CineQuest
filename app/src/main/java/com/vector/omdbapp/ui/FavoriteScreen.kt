@@ -4,11 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.vector.omdbapp.R
 import com.vector.omdbapp.viewmodel.FavoriteViewModel
 
@@ -28,7 +28,9 @@ import com.vector.omdbapp.viewmodel.FavoriteViewModel
  */
 @Composable
 fun FavoriteScreen(
-    viewModel: FavoriteViewModel = hiltViewModel()
+    viewModel: FavoriteViewModel = hiltViewModel(),
+    navController: NavHostController,
+    listState: LazyListState
 ) {
     val favorites by viewModel.favoriteList.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -49,15 +51,12 @@ fun FavoriteScreen(
 
             else -> {
                 LazyColumn(
+                    state = listState,
                     contentPadding = PaddingValues(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(favorites, key = { it.imdbID }) { movie ->
-                        FavoriteMovieItem(movie = movie)
-                        HorizontalDivider(
-                            modifier = Modifier.fillMaxWidth(),
-                            thickness = 1.dp
-                        )
+                        FavoriteMovieItem(movie = movie,navController)
                     }
                 }
             }

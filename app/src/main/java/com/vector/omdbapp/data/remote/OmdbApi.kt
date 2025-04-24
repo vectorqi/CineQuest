@@ -1,6 +1,7 @@
 package com.vector.omdbapp.data.remote
 
 import com.vector.omdbapp.data.model.OmdbSearchResponse
+import com.vector.omdbapp.data.remote.response.MovieDetailResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -24,4 +25,12 @@ interface OmdbApi {
         @Query("y") year: String,
         @Query("page") page: Int
     ): OmdbSearchResponse
+
+    // Movie detail
+    @GET(".")
+    suspend fun getMovieDetail(
+        @Query("apikey") apiKey: String,
+        @Query("i") imdbId: String,
+        @Query("plot") plot: String = "full"
+    ): MovieDetailResponse
 }

@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.vector.omdbapp.R
 import com.vector.omdbapp.viewmodel.FavoriteViewModel
 import com.vector.omdbapp.viewmodel.MovieViewModel
@@ -34,7 +34,9 @@ import kotlinx.coroutines.flow.debounce
  * Supports infinite pagination via scroll listener and shows loading/no-more-data UI at the bottom.
  */
 @Composable
-fun MovieList(listState: LazyListState) {
+fun MovieList(listState: LazyListState,
+              navController: NavController
+) {
     val viewModel: MovieViewModel = hiltViewModel()
     val favoriteViewModel: FavoriteViewModel = hiltViewModel()
     val favoriteList by favoriteViewModel.favoriteList.collectAsState()
@@ -72,10 +74,10 @@ fun MovieList(listState: LazyListState) {
             val isFavorite = favoriteList.any { it.imdbID == movie.imdbID }
             MovieItem(
                 movie = movie,
+                navController,
                 isFavorite = isFavorite,
                 onToggleFavorite = { favoriteViewModel.toggleFavorite(movie) }
             )
-            HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp)
         }
 
         if (uiState.isPaginating) {

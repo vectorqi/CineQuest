@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -35,7 +36,7 @@ fun PosterScreen(posterUrl: String, navController: NavController) {
 
     Box(modifier = Modifier
         .fillMaxSize()
-//        .background(Color.Black)
+
         .pointerInput(Unit) {
             detectTransformGestures { _, pan, zoom, _ ->
                 scale = (scale * zoom).coerceIn(1f, 5f)
@@ -67,7 +68,7 @@ fun PosterScreen(posterUrl: String, navController: NavController) {
                 .error(R.drawable.error)
                 .crossfade(true)
                 .build(),
-            contentDescription = "Poster",
+            contentDescription = stringResource(R.string.poster_desc),
             contentScale = ContentScale.Fit,
             modifier = Modifier
                 .fillMaxSize()

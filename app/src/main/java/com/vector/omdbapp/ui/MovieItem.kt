@@ -102,9 +102,9 @@ fun MovieItem(movie: Movie, navController: NavController, isFavorite: Boolean, o
                 Icon(
                     imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = if (isFavorite)
-                        stringResource(R.string.icon_unfavor)
+                        stringResource(R.string.icon_unfavor_desc)
                     else
-                        stringResource(R.string.icon_favor),
+                        stringResource(R.string.icon_favor_desc),
                     tint = if (isFavorite) MaterialTheme.colorScheme.primary else Color.Gray
                 )
             }

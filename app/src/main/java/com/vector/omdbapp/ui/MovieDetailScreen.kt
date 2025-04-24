@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -71,19 +72,19 @@ fun MovieDetailScreen(
             Scaffold(
                 topBar = {
                     TopAppBar(
-                        title = { Text("Movie Detail",
+                        title = { Text(stringResource(R.string.movie_detail_title),
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center) },
                         navigationIcon = {
                             IconButton(onClick = { navController.popBackStack() }) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back_button_desc))
                             }
                         },
                         actions = {
                             IconButton(onClick = { viewModel.toggleFavorite(movie) }) {
                                 Icon(
                                     imageVector = if (uiState.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                                    contentDescription = "Toggle Favorite"
+                                    contentDescription = stringResource(R.string.icon_favor_desc)
                                 )
                             }
                         }
@@ -107,7 +108,7 @@ fun MovieDetailScreen(
                             .error(R.drawable.error)
                             .crossfade(true)
                             .build(),
-                        contentDescription = "Poster",
+                        contentDescription = stringResource(R.string.poster_desc),
                         contentScale = ContentScale.FillWidth,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -128,34 +129,34 @@ fun MovieDetailScreen(
                     // Grouped movie detail info
                     Column(modifier = Modifier.padding(16.dp)) {
                         // Section: Basic Info
-                        Text("Basic Info", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
-                        DetailItem("Year", movie.year.toString())
-                        DetailItem("Rated", movie.rated.toString())
-                        DetailItem("Released", movie.released.toString())
-                        DetailItem("Runtime", movie.runtime.toString())
-                        DetailItem("Genre", movie.genre.toString())
+                        Text(stringResource(R.string.section_basic_info), fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
+                        DetailItem(stringResource(R.string.label_year), movie.year.toString())
+                        DetailItem(stringResource(R.string.label_rated), movie.rated.toString())
+                        DetailItem(stringResource(R.string.label_released), movie.released.toString())
+                        DetailItem(stringResource(R.string.label_runtime), movie.runtime.toString())
+                        DetailItem(stringResource(R.string.label_genre), movie.genre.toString())
 
                         Spacer(modifier = Modifier.height(8.dp))
                         // Section: Credits
-                        Text("Credits", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
-                        DetailItem("Director", movie.director.toString())
-                        DetailItem("Writer", movie.writer.toString())
-                        DetailItem("Actors", movie.actors.toString())
+                        Text(stringResource(R.string.section_credits), fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
+                        DetailItem(stringResource(R.string.label_director), movie.director.toString())
+                        DetailItem(stringResource(R.string.label_writer), movie.writer.toString())
+                        DetailItem(stringResource(R.string.label_actors), movie.actors.toString())
 
                         Spacer(modifier = Modifier.height(8.dp))
                         // Section: Description
-                        Text("Description", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
-                        DetailItem("Plot", movie.plot)
+                        Text(stringResource(R.string.section_description), fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
+                        DetailItem(stringResource(R.string.label_plot), movie.plot)
 
                         Spacer(modifier = Modifier.height(8.dp))
                         // Section: More Details
-                        Text("Details", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
-                        DetailItem("Language", movie.language.toString())
-                        DetailItem("Country", movie.country.toString())
-                        DetailItem("Awards", movie.awards.toString())
-                        DetailItem("IMDB Rating", movie.imdbRating.toString())
-                        DetailItem("BoxOffice", movie.boxOffice.toString())
-                        DetailItem("Production", movie.production.toString())
+                        Text(stringResource(R.string.section_details), fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
+                        DetailItem(stringResource(R.string.label_language), movie.language.toString())
+                        DetailItem(stringResource(R.string.label_country), movie.country.toString())
+                        DetailItem(stringResource(R.string.label_awards), movie.awards.toString())
+                        DetailItem( stringResource(R.string.label_rating), movie.imdbRating.toString())
+                        DetailItem( stringResource(R.string.label_boxoffice), movie.boxOffice.toString())
+                        DetailItem( stringResource(R.string.label_production), movie.production.toString())
                     }
                 }
             }
@@ -163,7 +164,7 @@ fun MovieDetailScreen(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text("Movie not found or error occurred.")
+             Text(stringResource(R.string.no_movie_error))
         }
     }
 }
@@ -181,7 +182,7 @@ private fun DetailItem(label: String, value: String) {
             fontSize = 16.sp,
             modifier = Modifier.width(120.dp)
         )
-        Text(text = if (value.isBlank() || value == "N/A"|| value == "null") "Unknown" else value,
+        Text(text = if (value.isBlank() || value == "N/A"|| value == "null") stringResource(R.string.unknown_field) else value,
             fontSize = 16.sp)
     }
 }

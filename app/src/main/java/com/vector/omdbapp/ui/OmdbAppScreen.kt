@@ -28,6 +28,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.vector.omdbapp.R
 import com.vector.omdbapp.navigation.MainNavigation
+import com.vector.omdbapp.navigation.Screen
 import com.vector.omdbapp.viewmodel.MovieViewModel
 import kotlinx.coroutines.launch
 
@@ -67,9 +68,9 @@ fun OmdbAppScreen() {
 
                 BottomAppBar {
                     NavigationBarItem(
-                        selected = currentRoute == "home",
+                        selected = currentRoute == Screen.Home.route,
                         onClick = {
-                            navController.navigate("home") {
+                            navController.navigate(Screen.Home.route) {
                                 popUpTo(navController.graph.startDestinationId) {
                                     saveState = true
                                 }
@@ -86,9 +87,9 @@ fun OmdbAppScreen() {
                         label = { Text(stringResource(R.string.tab_home)) }
                     )
                     NavigationBarItem(
-                        selected = currentRoute == "favorites",
+                        selected = currentRoute == Screen.Favorites.route,
                         onClick = {
-                            navController.navigate("favorites") {
+                            navController.navigate(Screen.Favorites.route) {
                                 popUpTo(navController.graph.startDestinationId) {
                                     saveState = true
                                 }

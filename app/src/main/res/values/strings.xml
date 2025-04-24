@@ -1,11 +1,10 @@
 <resources>
     <!-- ==== Shared movie labels ==== -->
     <string name="year_label">Year: </string>
-    <string name="icon_unfavor">Unfavorite</string>
-    <string name="icon_favor">Favorite</string>
     <string name="search_button">Search</string>
     <string name="filter_year">Year</string>
     <string name="filter_type">Type</string>
+
     <!-- ==== Independent Strings ==== -->
     <string name="app_name">OMDb App</string>
     <string name="app_title">OMDB Search APP</string>
@@ -18,4 +17,34 @@
     <string name="no_favorite_movies">You have no favorite movies yet.</string>
     <string name="tab_home">Home</string>
     <string name="tab_favorites">Favorites</string>
+
+    <!-- Content Descriptions -->
+    <string name="icon_favor_desc">Add to favorites</string>
+    <string name="icon_unfavor_desc">Remove from favorites</string>
+    <string name="back_button_desc">Back</string>
+    <string name="poster_desc">Poster</string>
+
+    <!-- MovieDetailScreen -->
+    <string name="movie_detail_title">Movie Detail</string>
+    <string name="no_movie_error">Movie not found or error occurred.</string>
+    <string name="section_basic_info">Basic Info</string>
+    <string name="section_credits">Credits</string>
+    <string name="section_description">Description</string>
+    <string name="section_details">Details</string>
+    <string name="label_year">Year</string>
+    <string name="label_rated">Rated</string>
+    <string name="label_released">Released</string>
+    <string name="label_runtime">Runtime</string>
+    <string name="label_genre">Genre</string>
+    <string name="label_director">Director</string>
+    <string name="label_writer">Writer</string>
+    <string name="label_actors">Actors</string>
+    <string name="label_plot">Plot</string>
+    <string name="label_language">Language</string>
+    <string name="label_country">Country</string>
+    <string name="label_awards">Awards</string>
+    <string name="label_rating">IMDB Rating</string>
+    <string name="label_boxoffice">BoxOffice</string>
+    <string name="label_production">Production</string>
+    <string name="unknown_field">Unknown</string>
 </resources>

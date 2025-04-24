@@ -59,6 +59,12 @@ fun HomeScreen(
             }
         }
     }
+    LaunchedEffect(Unit) {
+        if (uiState.movies.isEmpty() && !uiState.isLoading) {
+            viewModel.onQueryChange("Hero")
+            viewModel.searchMovies()
+        }
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         SnackbarHost(
             hostState = snackbarHostState,

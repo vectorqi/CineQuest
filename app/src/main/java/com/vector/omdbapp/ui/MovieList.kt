@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,11 +23,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.ImageLoader
+import coil.request.CachePolicy
 import com.vector.omdbapp.R
 import com.vector.omdbapp.viewmodel.FavoriteViewModel
 import com.vector.omdbapp.viewmodel.MovieViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 
 /**
  * MovieList.kt
@@ -40,14 +46,24 @@ fun MovieList(listState: LazyListState,
     val viewModel: MovieViewModel = hiltViewModel()
     val favoriteViewModel: FavoriteViewModel = hiltViewModel()
     val favoriteList by favoriteViewModel.favoriteList.collectAsState()
+    val favoriteMap by remember(favoriteList) {
+        mutableStateOf(favoriteList.associateBy { it.imdbID })
+    }
 
     val uiState by viewModel.homeUiState.collectAsState()
     val context = LocalContext.current
+    val imageLoader = ImageLoader.Builder(context)
+        .crossfade(true)
+        .diskCachePolicy(CachePolicy.ENABLED)
+        .memoryCachePolicy(CachePolicy.ENABLED)
+        .build()
 
     @OptIn(FlowPreview::class)
     LaunchedEffect(Unit) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
-            .debounce(200)
+            .filterNotNull()
+            .debounce(400)
+            .distinctUntilChanged()
             .collect { lastVisibleIndex ->
                 if (
                     !uiState.noMoreData &&
@@ -55,7 +71,6 @@ fun MovieList(listState: LazyListState,
                     !uiState.isPaginating &&
                     !uiState.isRefreshing &&
                     uiState.movies.isNotEmpty() &&
-                    lastVisibleIndex != null &&
                     lastVisibleIndex >= uiState.movies.size - 1 &&
                     viewModel.currentPage > 1 &&
                     listState.firstVisibleItemIndex > 0
@@ -71,12 +86,13 @@ fun MovieList(listState: LazyListState,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(uiState.movies, key = { movie -> movie.imdbID }) { movie ->
-            val isFavorite = favoriteList.any { it.imdbID == movie.imdbID }
+            val isFavorite = favoriteMap.containsKey(movie.imdbID)
             MovieItem(
                 movie = movie,
                 navController,
                 isFavorite = isFavorite,
-                onToggleFavorite = { favoriteViewModel.toggleFavorite(movie) }
+                onToggleFavorite = { favoriteViewModel.toggleFavorite(movie) },
+                imageLoader = imageLoader
             )
         }
 

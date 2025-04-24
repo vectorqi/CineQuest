@@ -12,14 +12,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -30,7 +25,6 @@ import com.vector.omdbapp.R
 import com.vector.omdbapp.navigation.MainNavigation
 import com.vector.omdbapp.navigation.Screen
 import com.vector.omdbapp.viewmodel.MovieViewModel
-import kotlinx.coroutines.launch
 
 enum class BottomNavItem(
     val icon: ImageVector
@@ -58,12 +52,8 @@ fun OmdbAppScreen() {
     val currentRoute = navBackStackEntry?.destination?.route
     val showAppBars = currentRoute?.startsWith("detail/") != true && currentRoute?.startsWith("poster/") != true
 
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
     if (showAppBars) {
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
 
                 BottomAppBar {
@@ -125,14 +115,6 @@ fun OmdbAppScreen() {
                 homeListState = homeListState,
                 favoriteListState = favoriteListState
             )
-        }
-    }
-    // Observe snackbar messages from the ViewModel
-    LaunchedEffect(Unit) {
-        viewModel.snackbarFlow.collect { message ->
-            scope.launch {
-                snackbarHostState.showSnackbar(message)
-            }
         }
     }
 }

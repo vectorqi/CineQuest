@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.ImageLoader
 import coil.compose.AsyncImage
-import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.vector.omdbapp.R
 import com.vector.omdbapp.data.model.Movie
@@ -46,22 +45,19 @@ import com.vector.omdbapp.navigation.Screen
  * @param onToggleFavorite Callback function to toggle favorite status.
  */
 @Composable
-fun MovieItem(movie: Movie, navController: NavController, isFavorite: Boolean, onToggleFavorite: () -> Unit) {
+fun MovieItem(movie: Movie,
+              navController: NavController,
+              isFavorite: Boolean,
+              onToggleFavorite: () -> Unit,
+              imageLoader: ImageLoader
+              ) {
+    val context = LocalContext.current
     Card(
         modifier = Modifier
             .clickable {
                 navController.navigate(Screen.MovieDetail.createRoute(movie.imdbID))
             }
     ) {
-        val context = LocalContext.current
-
-        // Coil image loader with memory + disk cache
-        val customImageLoader = ImageLoader.Builder(context)
-            .crossfade(true)
-            .diskCachePolicy(CachePolicy.ENABLED)
-            .memoryCachePolicy(CachePolicy.ENABLED)
-            .build()
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -76,7 +72,7 @@ fun MovieItem(movie: Movie, navController: NavController, isFavorite: Boolean, o
                     .error(R.drawable.error)
                     .size(128, 192)
                     .build(),
-                imageLoader = customImageLoader,
+                imageLoader = imageLoader,
                 contentDescription = movie.title,
                 modifier = Modifier.size(80.dp)
             )

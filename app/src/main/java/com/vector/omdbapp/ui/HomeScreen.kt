@@ -11,15 +11,11 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -28,7 +24,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.vector.omdbapp.R
 import com.vector.omdbapp.viewmodel.MovieViewModel
-import kotlinx.coroutines.launch
 
 /**
  * The main screen displaying a list of movies based on user search criteria.
@@ -48,17 +43,11 @@ fun HomeScreen(
     ) {
     val context = LocalContext.current
     val uiState by viewModel.homeUiState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
-    // Collect snackbar messages
-    LaunchedEffect(Unit) {
-        viewModel.snackbarFlow.collect { message ->
-            scope.launch {
-                snackbarHostState.showSnackbar(message)
-            }
-        }
-    }
+    /*
+     *Automatically sets query to "Hero" and triggers searchMovies()，
+     *Ensures initial movie list is populated without user input
+     */
     LaunchedEffect(Unit) {
         if (uiState.movies.isEmpty() && !uiState.isLoading) {
             viewModel.onQueryChange("Hero")
@@ -66,24 +55,17 @@ fun HomeScreen(
         }
     }
     Box(modifier = Modifier.fillMaxSize()) {
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
 
         Column(modifier = Modifier.fillMaxSize()) {
             SearchBar(
                 query = uiState.query,
                 onQueryChange = viewModel::onQueryChange,
-                onSearchClick = {
-                    viewModel.searchMovies()
-                },
+                onSearchClick = { viewModel.searchMovies() },
                 selectedYear = uiState.selectedYear,
                 onYearChange = viewModel::onYearChange,
                 selectedType = uiState.selectedType,
-                onTypeChange = viewModel::onTypeChange
+                onTypeChange = viewModel::onTypeChange,
             )
-
             when {
                 uiState.isLoading -> {
                     Box(

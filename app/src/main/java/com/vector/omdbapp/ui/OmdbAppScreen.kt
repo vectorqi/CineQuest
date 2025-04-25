@@ -50,12 +50,6 @@ fun OmdbAppScreen() {
     val context = LocalContext.current
     val imageLoader = remember { provideGlobalImageLoader(context) }
 
-//    val currentLabel = when (currentRoute) {
-//        Screen.Home.route -> stringResource(R.string.tab_home)
-//        Screen.Favorites.route -> stringResource(R.string.tab_favorites)
-//        else -> stringResource(R.string.app_name)
-//    }
-
     CompositionLocalProvider(LocalAppImageLoader provides imageLoader) {
         if (showAppBars) {
             Scaffold(

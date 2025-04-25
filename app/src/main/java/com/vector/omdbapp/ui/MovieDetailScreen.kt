@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -60,14 +59,13 @@ fun MovieDetailScreen(
 
     // Trigger detail loading when component is first composed
     LaunchedEffect(imdbId) {
-        viewModel.loadMovieDetail(imdbId)
+        if (viewModel.detailUiState.value.movie == null) {
+            viewModel.loadMovieDetail(imdbId)
+        }
     }
 
     if (uiState.isLoading) {
-        // Show loading indicator while fetching data
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
+        MovieDetailSkeleton()
     } else {
         uiState.movie?.let { movie ->
             Scaffold(

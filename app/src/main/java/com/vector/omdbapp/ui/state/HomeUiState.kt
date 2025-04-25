@@ -24,7 +24,6 @@ data class HomeUiState(
     val errorMessage: String? = null,
     val isLoading: Boolean = false,
     val isPaginating: Boolean = false,
-    val isRefreshing: Boolean = false,
     val noMoreData: Boolean = false,  // Prevents further loading after final page
     val totalResults: Int = 0
 )

@@ -13,7 +13,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,7 +33,6 @@ class MovieViewModel @Inject constructor(
     private var isLoadingPage = false  // Prevents duplicate requests
     private val _snackbarChannel = Channel<String>(Channel.BUFFERED)  // Channel for snackbar messages
     val currentPage: Int get() = this._currentPage
-    val snackbarFlow = _snackbarChannel.receiveAsFlow()  // Convert the channel to a flow
     private var currentQuery: String = ""
 
     /**
@@ -97,40 +95,6 @@ class MovieViewModel @Inject constructor(
                 }
             }
             isLoadingPage = false
-        }
-    }
-
-    fun refreshMovies() {
-        viewModelScope.launch {
-            _homeUiState.update { it.copy(isRefreshing = true) }
-
-            val query = _homeUiState.value.query.trim()
-            val typeParam = if (_homeUiState.value.selectedType == TypeFilter.ALL) "" else _homeUiState.value.selectedType.value
-            val yearParam = if (_homeUiState.value.selectedYear == YearFilter.ALL) "" else _homeUiState.value.selectedYear
-
-            val result = repository.searchMovies(query,typeParam, yearParam,firstPage)
-            result.onSuccess { searchResult ->
-                _homeUiState.update {
-                    it.copy(
-                        movies = searchResult.movies,
-                        totalResults = searchResult.totalResults,
-                        isRefreshing = false,
-                        isPaginating = false,
-                        errorMessage = null,
-                        noMoreData = false,
-                    )
-                }
-                _currentPage = firstPage+1
-                checkNoMoreData()
-            }.onFailure {throwable ->
-                _homeUiState.update {
-                    it.copy(
-                        isRefreshing = false,
-                        isPaginating = false,
-                        errorMessage = throwable.message
-                    )
-                }
-            }
         }
     }
 

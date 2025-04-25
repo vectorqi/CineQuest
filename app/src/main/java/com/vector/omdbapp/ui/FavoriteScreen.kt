@@ -4,10 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.vector.omdbapp.R
+import com.vector.omdbapp.util.LocalAppImageLoader
 import com.vector.omdbapp.viewmodel.FavoriteViewModel
 
 /**
@@ -34,17 +36,31 @@ fun FavoriteScreen(
 ) {
     val favorites by viewModel.favoriteList.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val favoriteViewModel: FavoriteViewModel = hiltViewModel()
+    val imageLoader = LocalAppImageLoader.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
             isLoading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                LazyColumn(
+                    state = listState,
+                    contentPadding = PaddingValues(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(6) {
+                        MovieItemSkeleton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(128.dp)
+                        )
+                    }
+                }
             }
 
             favorites.isEmpty() -> {
                 Text(
                     text = stringResource(R.string.no_favorite_movies),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
@@ -56,8 +72,18 @@ fun FavoriteScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(favorites, key = { it.imdbID }) { movie ->
-                        FavoriteMovieItem(movie = movie,navController)
+                        MovieItem(
+                            movie = movie,
+                            navController = navController,
+                            imageLoader = imageLoader,
+                            isFavorite = true,
+                            onToggleFavorite = { favoriteViewModel.toggleFavorite(movie) }
+                        )
                     }
+                    item {
+                        NoMoreDataFooter()
+                    }
+
                 }
             }
         }

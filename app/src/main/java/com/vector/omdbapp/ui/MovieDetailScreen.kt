@@ -1,6 +1,11 @@
 package com.vector.omdbapp.ui
 
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -68,94 +73,160 @@ fun MovieDetailScreen(
         MovieDetailSkeleton()
     } else {
         uiState.movie?.let { movie ->
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = { Text(stringResource(R.string.movie_detail_title),
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center) },
-                        navigationIcon = {
-                            IconButton(onClick = { navController.popBackStack() }) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back_button_desc))
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = { viewModel.toggleFavorite(movie) }) {
-                                Icon(
-                                    imageVector = if (uiState.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                                    contentDescription = stringResource(R.string.icon_favor_desc)
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn(tween(300)) + slideInVertically(initialOffsetY = { it / 4 }, animationSpec = tween(300)),
+                exit = fadeOut()
+            ) {
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = {
+                                Text(
+                                    stringResource(R.string.movie_detail_title),
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
                                 )
+                            },
+                            navigationIcon = {
+                                IconButton(onClick = { navController.popBackStack() }) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = stringResource(R.string.back_button_desc)
+                                    )
+                                }
+                            },
+                            actions = {
+                                IconButton(onClick = { viewModel.toggleFavorite(movie) }) {
+                                    Icon(
+                                        imageVector = if (uiState.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                                        contentDescription = stringResource(R.string.icon_favor_desc)
+                                    )
+                                }
                             }
-                        }
-                    )
-                },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(0.dp)
-            ) { innerPadding ->
-                Column(
+                        )
+                    },
                     modifier = Modifier
-                        .padding(innerPadding)
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    // Poster image with clickable navigation to zoom view
-                    AsyncImage(
-                        model = ImageRequest.Builder(context)
-                            .data(movie.posterUrl)
-                            .placeholder(R.drawable.loading)
-                            .error(R.drawable.error)
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = stringResource(R.string.poster_desc),
-                        contentScale = ContentScale.FillWidth,
+                        .padding(0.dp)
+                ) { innerPadding ->
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                val encodedUrl = Uri.encode(movie.posterUrl)
-                                navController.navigate(Screen.Poster.createRoute(encodedUrl))
-                            }
-                    )
-                    Text(
-                        text = movie.title,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .padding(16.dp,16.dp,16.dp,0.dp)
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Start
-                    )
-                    // Grouped movie detail info
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        // Section: Basic Info
-                        Text(stringResource(R.string.section_basic_info), fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
-                        DetailItem(stringResource(R.string.label_year), movie.year.toString())
-                        DetailItem(stringResource(R.string.label_rated), movie.rated.toString())
-                        DetailItem(stringResource(R.string.label_released), movie.released.toString())
-                        DetailItem(stringResource(R.string.label_runtime), movie.runtime.toString())
-                        DetailItem(stringResource(R.string.label_genre), movie.genre.toString())
+                            .padding(innerPadding)
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        // Poster image with clickable navigation to zoom view
+                        AsyncImage(
+                            model = ImageRequest.Builder(context)
+                                .data(movie.posterUrl)
+                                .placeholder(R.drawable.loading)
+                                .error(R.drawable.error)
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = stringResource(R.string.poster_desc),
+                            contentScale = ContentScale.FillWidth,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    val encodedUrl = Uri.encode(movie.posterUrl)
+                                    navController.navigate(Screen.Poster.createRoute(encodedUrl))
+                                }
+                        )
+                        Text(
+                            text = movie.title,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .padding(16.dp, 16.dp, 16.dp, 0.dp)
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Start
+                        )
+                        // Grouped movie detail info
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            // Section: Basic Info
+                            Text(
+                                stringResource(R.string.section_basic_info),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                            DetailItem(stringResource(R.string.label_year), movie.year.toString())
+                            DetailItem(stringResource(R.string.label_rated), movie.rated.toString())
+                            DetailItem(
+                                stringResource(R.string.label_released),
+                                movie.released.toString()
+                            )
+                            DetailItem(
+                                stringResource(R.string.label_runtime),
+                                movie.runtime.toString()
+                            )
+                            DetailItem(stringResource(R.string.label_genre), movie.genre.toString())
 
-                        Spacer(modifier = Modifier.height(8.dp))
-                        // Section: Credits
-                        Text(stringResource(R.string.section_credits), fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
-                        DetailItem(stringResource(R.string.label_director), movie.director.toString())
-                        DetailItem(stringResource(R.string.label_writer), movie.writer.toString())
-                        DetailItem(stringResource(R.string.label_actors), movie.actors.toString())
+                            Spacer(modifier = Modifier.height(8.dp))
+                            // Section: Credits
+                            Text(
+                                stringResource(R.string.section_credits),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                            DetailItem(
+                                stringResource(R.string.label_director),
+                                movie.director.toString()
+                            )
+                            DetailItem(
+                                stringResource(R.string.label_writer),
+                                movie.writer.toString()
+                            )
+                            DetailItem(
+                                stringResource(R.string.label_actors),
+                                movie.actors.toString()
+                            )
 
-                        Spacer(modifier = Modifier.height(8.dp))
-                        // Section: Description
-                        Text(stringResource(R.string.section_description), fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
-                        DetailItem(stringResource(R.string.label_plot), movie.plot)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            // Section: Description
+                            Text(
+                                stringResource(R.string.section_description),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                            DetailItem(stringResource(R.string.label_plot), movie.plot)
 
-                        Spacer(modifier = Modifier.height(8.dp))
-                        // Section: More Details
-                        Text(stringResource(R.string.section_details), fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
-                        DetailItem(stringResource(R.string.label_language), movie.language.toString())
-                        DetailItem(stringResource(R.string.label_country), movie.country.toString())
-                        DetailItem(stringResource(R.string.label_awards), movie.awards.toString())
-                        DetailItem( stringResource(R.string.label_rating), movie.imdbRating.toString())
-                        DetailItem( stringResource(R.string.label_boxoffice), movie.boxOffice.toString())
-                        DetailItem( stringResource(R.string.label_production), movie.production.toString())
+                            Spacer(modifier = Modifier.height(8.dp))
+                            // Section: More Details
+                            Text(
+                                stringResource(R.string.section_details),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                            DetailItem(
+                                stringResource(R.string.label_language),
+                                movie.language.toString()
+                            )
+                            DetailItem(
+                                stringResource(R.string.label_country),
+                                movie.country.toString()
+                            )
+                            DetailItem(
+                                stringResource(R.string.label_awards),
+                                movie.awards.toString()
+                            )
+                            DetailItem(
+                                stringResource(R.string.label_rating),
+                                movie.imdbRating.toString()
+                            )
+                            DetailItem(
+                                stringResource(R.string.label_boxoffice),
+                                movie.boxOffice.toString()
+                            )
+                            DetailItem(
+                                stringResource(R.string.label_production),
+                                movie.production.toString()
+                            )
+                        }
                     }
                 }
             }

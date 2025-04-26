@@ -48,4 +48,6 @@
     <string name="label_production">Production</string>
     <string name="unknown_field">Unknown</string>
     <string name="clear_text_desc">Clear Text</string>
+    <string name="browse_movies">Browse Movies</string>
+    <string name="go_explore_hint">Start exploring and discover your favorite movies!</string>
 </resources>

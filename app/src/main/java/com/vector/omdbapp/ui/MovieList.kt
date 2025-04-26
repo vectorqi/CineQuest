@@ -67,6 +67,7 @@ fun MovieList(
         contentPadding = PaddingValues(top = 12.dp, bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+
         if (uiState.movies.isEmpty() && uiState.isLoading) {
             items(6) {
                 MovieItemSkeleton(

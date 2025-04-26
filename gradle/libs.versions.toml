@@ -21,6 +21,7 @@ media3CommonKtx = "1.6.1"
 mockk = "1.13.10"
 coroutinesTest = "1.8.1"
 turbine = "1.0.0"
+accompanist-systemuicontroller = "0.31.3-beta"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -56,6 +57,7 @@ androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist-systemuicontroller" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

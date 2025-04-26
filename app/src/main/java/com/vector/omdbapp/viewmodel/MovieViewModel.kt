@@ -8,7 +8,7 @@ import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.data.model.TypeFilter
 import com.vector.omdbapp.data.model.YearFilter
 import com.vector.omdbapp.data.repository.MovieRepository
-import com.vector.omdbapp.ui.state.HomeUiState
+import com.vector.omdbapp.ui.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow

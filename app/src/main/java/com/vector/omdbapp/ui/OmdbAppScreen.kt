@@ -1,5 +1,6 @@
 package com.vector.omdbapp.ui
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,12 +10,14 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -23,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.vector.omdbapp.R
 import com.vector.omdbapp.navigation.MainNavigation
 import com.vector.omdbapp.navigation.Screen
@@ -42,6 +46,9 @@ fun OmdbAppScreen() {
     val navController = rememberNavController()
     val homeListState = rememberLazyListState()
     val favoriteListState = rememberLazyListState()
+    val systemUiController = rememberSystemUiController()
+    val useDarkIcons = !isSystemInDarkTheme()
+    val backgroundColor = MaterialTheme.colorScheme.background
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -49,6 +56,13 @@ fun OmdbAppScreen() {
 
     val context = LocalContext.current
     val imageLoader = remember { provideGlobalImageLoader(context) }
+
+    SideEffect {
+        systemUiController.setSystemBarsColor(
+            color = backgroundColor,
+            darkIcons = useDarkIcons
+        )
+    }
 
     CompositionLocalProvider(LocalAppImageLoader provides imageLoader) {
         if (showAppBars) {

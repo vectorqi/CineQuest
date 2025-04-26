@@ -1,10 +1,12 @@
 package com.vector.omdbapp.ui
 
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -36,7 +38,7 @@ fun PosterScreen(posterUrl: String, navController: NavController) {
 
     Box(modifier = Modifier
         .fillMaxSize()
-
+        .background(MaterialTheme.colorScheme.background)
         .pointerInput(Unit) {
             detectTransformGestures { _, pan, zoom, _ ->
                 scale = (scale * zoom).coerceIn(1f, 5f)

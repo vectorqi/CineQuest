@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -138,10 +137,9 @@ fun HomeScreen(
 
             when {
                 uiState.errorMessage != null -> {
-                    Text(
-                        text = stringResource(R.string.error_label) + uiState.errorMessage,
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.bodyLarge
+                    ErrorState(
+                        message = uiState.errorMessage.toString(),
+                        onRetry = { viewModel.searchMovies() }
                     )
                 }
 

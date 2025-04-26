@@ -1,42 +1,27 @@
 package com.vector.omdbapp.ui
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.vector.omdbapp.R
 import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.data.model.TypeFilter
 import com.vector.omdbapp.data.model.YearFilter
+import com.vector.omdbapp.util.ErrorState
 import com.vector.omdbapp.viewmodel.MovieViewModel
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
 
 /**
  * Represents the UI state, including movies, query text, and
@@ -70,19 +55,6 @@ fun HomeScreen(
     navController: NavHostController,
 ) {
     val uiState by viewModel.homeUiState.collectAsState()
-    val showFilter = remember { mutableStateOf(true) }
-    val previousOffset = remember { mutableIntStateOf(0) }
-
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemScrollOffset }
-            .distinctUntilChanged()
-            .collectLatest { currentOffset ->
-                if (currentOffset != 0) {
-                    showFilter.value = currentOffset < previousOffset.intValue
-                }
-                previousOffset.intValue = currentOffset
-            }
-    }
 
     LaunchedEffect(Unit) {
         if (uiState.movies.isEmpty() && !uiState.isLoading) {
@@ -102,37 +74,12 @@ fun HomeScreen(
                 SearchBar(
                     query = uiState.query,
                     onQueryChange = viewModel::onQueryChange,
-                    onSearchClick = { viewModel.searchMovies() }
+                    onSearchClick = { viewModel.searchMovies() },
+                    selectedYear = uiState.selectedYear,
+                    onYearChange = viewModel::onYearChange,
+                    selectedType = uiState.selectedType,
+                    onTypeChange = viewModel::onTypeChange
                 )
-            }
-
-            AnimatedVisibility(
-                visible = showFilter.value,
-                enter = expandVertically(animationSpec = tween(300)),
-                exit = shrinkVertically(animationSpec = tween(300))
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    SelectableFilterChip(
-                        label = stringResource(R.string.filter_year),
-                        options = YearFilter.generateYearOptions(),
-                        selectedOption = uiState.selectedYear,
-                        onOptionSelected = viewModel::onYearChange
-                    )
-                    SelectableFilterChip(
-                        label =  stringResource(R.string.filter_type),
-                        options = TypeFilter.displayNames(),
-                        selectedOption = uiState.selectedType.displayName,
-                        onOptionSelected = {
-                            viewModel.onTypeChange(TypeFilter.fromDisplayName(it))
-                        }
-                    )
-                }
             }
 
             when {

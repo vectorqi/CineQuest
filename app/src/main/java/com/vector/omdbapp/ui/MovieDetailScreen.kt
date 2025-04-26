@@ -48,6 +48,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.vector.omdbapp.R
 import com.vector.omdbapp.navigation.Screen
+import com.vector.omdbapp.util.ErrorState
 import com.vector.omdbapp.viewmodel.DetailViewModel
 
 /**

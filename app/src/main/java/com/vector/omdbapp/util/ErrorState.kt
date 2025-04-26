@@ -1,4 +1,4 @@
-package com.vector.omdbapp.ui
+package com.vector.omdbapp.util
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,11 +14,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.vector.omdbapp.R
 
 /**
  * ErrorState composable to show a unified empty/error screen.
@@ -30,6 +33,17 @@ fun ErrorState(
     icon: ImageVector = Icons.Filled.Warning,
     onRetry: (() -> Unit)? = null
 ) {
+    val isNetworkError = remember(message) {
+    message.contains("unable to resolve host", ignoreCase = true)
+            || message.contains("failed to connect", ignoreCase = true)
+            || message.contains("timeout", ignoreCase = true)
+}
+
+    val displayedMessage = if (isNetworkError) {
+        stringResource(id = R.string.error_network_unavailable)
+    } else {
+        message
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -47,7 +61,7 @@ fun ErrorState(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = message,
+            text = displayedMessage,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center

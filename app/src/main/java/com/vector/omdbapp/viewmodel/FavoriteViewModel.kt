@@ -7,6 +7,7 @@ import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.data.model.toDomain
 import com.vector.omdbapp.data.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,6 +35,8 @@ class FavoriteViewModel @Inject constructor(
     init {
         // Start collecting the favorite list from Room database
         viewModelScope.launch {
+            //Todo: to be deleted after demo
+            delay(500)
             favoriteMovieDao.getAllFavorites()
                 .map { list -> list.map { it.toDomain() } }
                 .catch {  // catch any unexpected error from DAO

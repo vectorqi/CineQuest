@@ -139,7 +139,8 @@ fun HomeScreen(
                 uiState.errorMessage != null -> {
                     ErrorState(
                         message = uiState.errorMessage.toString(),
-                        onRetry = { viewModel.searchMovies() }
+                        onRetry = {
+                            viewModel.searchMovies() }
                     )
                 }
 

@@ -22,6 +22,7 @@ import com.vector.omdbapp.util.LocalAppImageLoader
 import com.vector.omdbapp.viewmodel.FavoriteViewModel
 import com.vector.omdbapp.viewmodel.MovieViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
@@ -57,6 +58,8 @@ fun MovieList(
                     viewModel.currentPage > 1 &&
                     listState.firstVisibleItemIndex > 0
                 ) {
+                    //Todo: to be deleted after demo
+                    delay(500)
                     viewModel.loadMoreMovies()
                 }
             }

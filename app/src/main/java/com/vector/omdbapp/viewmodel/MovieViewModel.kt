@@ -1,16 +1,14 @@
 package com.vector.omdbapp.viewmodel
 
-import android.content.res.Resources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vector.omdbapp.R
 import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.data.model.TypeFilter
 import com.vector.omdbapp.data.model.YearFilter
 import com.vector.omdbapp.data.repository.MovieRepository
 import com.vector.omdbapp.ui.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -23,15 +21,13 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class MovieViewModel @Inject constructor(
-    private val repository: MovieRepository,
-    private val resources: Resources
+    private val repository: MovieRepository
 ) : ViewModel()  {
     private val firstPage = 1
     private val _homeUiState = MutableStateFlow(HomeUiState())
     val homeUiState: StateFlow<HomeUiState> = _homeUiState
     private var _currentPage = firstPage        // Tracks which page we are currently loading
     private var isLoadingPage = false  // Prevents duplicate requests
-    private val _snackbarChannel = Channel<String>(Channel.BUFFERED)  // Channel for snackbar messages
     val currentPage: Int get() = this._currentPage
     private var currentQuery: String = ""
 
@@ -40,13 +36,6 @@ class MovieViewModel @Inject constructor(
      */
     fun searchMovies() {
         val query = _homeUiState.value.query.trim()
-        // Avoid empty queries
-        if (query.isEmpty()) {
-            viewModelScope.launch {
-                _snackbarChannel.send(resources.getString(R.string.empty_query_message))
-            }
-            return
-        }
         // Avoid simultaneous requests
         if (isLoadingPage) return
         isLoadingPage = true
@@ -65,10 +54,11 @@ class MovieViewModel @Inject constructor(
         }
         // Launch a coroutine to load the first page
         viewModelScope.launch {
+            //Todo: to be deleted after demo
+            delay(500)
             val currentQuery = _homeUiState.value.query
             val typeParam = if (_homeUiState.value.selectedType == TypeFilter.ALL) "" else _homeUiState.value.selectedType.value
             val yearParam = if (_homeUiState.value.selectedYear == YearFilter.ALL) "" else _homeUiState.value.selectedYear
-
             val result = repository.searchMovies(currentQuery,typeParam,yearParam, page = _currentPage)
             // Handle the result
             result.onSuccess { searchResult ->
@@ -109,6 +99,8 @@ class MovieViewModel @Inject constructor(
         _homeUiState.update { it.copy(isPaginating = true) }
         // Launch a coroutine to load the next page
         viewModelScope.launch {
+            //Todo: to be deleted after demo
+            delay(500)
             val typeParam = if (_homeUiState.value.selectedType == TypeFilter.ALL) "" else _homeUiState.value.selectedType.value
             val yearParam = if (_homeUiState.value.selectedYear == YearFilter.ALL) "" else _homeUiState.value.selectedYear
             val result = repository.searchMovies(currentQuery,typeParam,yearParam, page = _currentPage)

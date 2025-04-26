@@ -6,8 +6,7 @@
     <string name="filter_type">Type</string>
 
     <!-- ==== Independent Strings ==== -->
-    <string name="app_name">OMDb App</string>
-    <string name="app_title">OMDB Search APP</string>
+    <string name="app_name">CineQuest</string>
     <string name="search_label">Search movies</string>
     <string name="error_label">Error: </string>
     <string name="no_more_data">No more data.</string>

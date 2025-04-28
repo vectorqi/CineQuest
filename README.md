@@ -100,4 +100,20 @@ CineQuest/
 
 ---
 
+## 🚀 How to Run
 
+Follow these steps to set up and run the CineQuest app:
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/vectorqi/CineQuest.git
+
+2. **Open with Android Studio**
+   Make sure your environment supports Kotlin 1.9+ and Jetpack Compose Compiler.
+
+3. **Sync Gradle**
+   Android Studio will prompt you to sync project Gradle files. Click Sync Now.
+
+4. **Run the app**
+   Use a real device or emulator (API Level 26+ recommended).

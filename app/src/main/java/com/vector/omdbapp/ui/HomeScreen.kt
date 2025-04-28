@@ -1,5 +1,6 @@
 package com.vector.omdbapp.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,9 +15,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.vector.omdbapp.R
 import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.data.model.TypeFilter
 import com.vector.omdbapp.data.model.YearFilter
@@ -57,6 +60,7 @@ fun HomeScreen(
     navController: NavHostController,
 ) {
     val uiState by viewModel.homeUiState.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         if (uiState.movies.isEmpty() && !uiState.isLoading) {
@@ -89,7 +93,16 @@ fun HomeScreen(
                     ErrorState(
                         message = uiState.errorMessage.toString(),
                         onRetry = {
-                            viewModel.searchMovies() }
+                            if (uiState.query.trim().isEmpty()) {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.empty_query_message),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                viewModel.searchMovies()
+                            }
+                        }
                     )
                 }
 

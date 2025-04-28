@@ -31,7 +31,7 @@ import com.vector.omdbapp.R
 fun ErrorState(
     message: String,
     icon: ImageVector = Icons.Filled.Warning,
-    onRetry: (() -> Unit)? = null
+    onRetry:  (() -> Unit)? = null
 ) {
     val isNetworkError = remember(message) {
     message.contains("unable to resolve host", ignoreCase = true)

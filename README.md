@@ -5,10 +5,10 @@
 ---
 
 ## 📱 Screenshots(Light and Dark Mode full support)
-| Home | Details | Favorites | Error Handling |
-|:----:|:-------:|:---------:|:--------------:|
-| ![home](screenshots/home_light.png) | ![detail](screenshots/detail_light.png) | ![favorites](screenshots/favourite_light.png) | ![error](screenshots/error_light.png) |
-| ![home](screenshots/home_dark.png) | ![detail](screenshots/detail_dark.png) | ![favorites](screenshots/favourite_dark.png) | ![error](screenshots/error_dark.png) |
+| Home | Details | Favorites | Shimmer Skeleton | Error Handling |
+|:----:|:-------:|:---------:|:--------------:|:--------------:|
+| ![home](screenshots/home_light.png) | ![detail](screenshots/detail_light.png) | ![favorites](screenshots/favourite_light.png) | ![error](screenshots/home_skeleton_light.png) |![error](screenshots/error_light.png) |
+| ![home](screenshots/home_dark.png) | ![detail](screenshots/detail_dark.png) | ![favorites](screenshots/favourite_dark.png) | ![error](screenshots/home_skeleton_dark.png) | ![error](screenshots/error_dark.png) |
 > _More screenshots available inside `/screenshots/` folder._
 
 ---

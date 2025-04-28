@@ -5,7 +5,11 @@
 ---
 
 ## 📱 Screenshots
-
+| Home | Details | Favorites | Error Handling |
+|:----:|:-------:|:---------:|:--------------:|
+| ![home](screenshots/home_light.png) | ![detail](screenshots/detail_light.png) | ![favorites](screenshots/favourites_light.png) | ![error](screenshots/error_light.png) |
+| ![home](screenshots/home_dark.png) | ![detail](screenshots/detail_dark.png) | ![favorites](screenshots/favourites_dark.png) | ![error](screenshots/error_dark.png) |
+> _More screenshots available inside `/screenshots/` folder._
 
 ---
 
@@ -55,7 +59,7 @@
 | Local Storage | Room Database |
 | Network | Retrofit, Coroutine Flows |
 | Utilities | Kotlin Coroutines |
-| Testing | JUnit |
+| Testing | JUnit, MockK |
 | CI/CD | GitHub Actions |
 
 ---

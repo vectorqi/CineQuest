@@ -1,4 +1,4 @@
-package com.vector.omdbapp.ui
+package com.vector.omdbapp.ui.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
@@ -35,7 +35,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.vector.omdbapp.R
 import com.vector.omdbapp.data.model.Movie
-import com.vector.omdbapp.navigation.Screen
+import com.vector.omdbapp.ui.navigation.Screen
 
 /**
  * MovieItem.kt

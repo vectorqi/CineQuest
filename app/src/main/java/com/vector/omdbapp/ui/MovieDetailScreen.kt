@@ -47,8 +47,9 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.vector.omdbapp.R
-import com.vector.omdbapp.navigation.Screen
-import com.vector.omdbapp.util.ErrorState
+import com.vector.omdbapp.ui.navigation.Screen
+import com.vector.omdbapp.ui.components.MovieDetailSkeleton
+import com.vector.omdbapp.ui.components.ErrorState
 import com.vector.omdbapp.viewmodel.DetailViewModel
 
 /**

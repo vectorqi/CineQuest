@@ -1,4 +1,4 @@
-package com.vector.omdbapp.navigation
+package com.vector.omdbapp.ui.navigation
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable

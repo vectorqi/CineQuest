@@ -20,7 +20,9 @@ import androidx.navigation.NavHostController
 import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.data.model.TypeFilter
 import com.vector.omdbapp.data.model.YearFilter
-import com.vector.omdbapp.util.ErrorState
+import com.vector.omdbapp.ui.components.ErrorState
+import com.vector.omdbapp.ui.components.MovieList
+import com.vector.omdbapp.ui.components.SearchBar
 import com.vector.omdbapp.viewmodel.MovieViewModel
 
 /**

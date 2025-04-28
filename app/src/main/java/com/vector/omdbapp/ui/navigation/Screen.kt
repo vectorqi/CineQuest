@@ -1,4 +1,4 @@
-package com.vector.omdbapp.navigation
+package com.vector.omdbapp.ui.navigation
 
 sealed class Screen(val route: String) {
     data object Home : Screen("home")

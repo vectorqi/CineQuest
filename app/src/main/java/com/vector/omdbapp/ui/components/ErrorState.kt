@@ -1,4 +1,4 @@
-package com.vector.omdbapp.util
+package com.vector.omdbapp.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

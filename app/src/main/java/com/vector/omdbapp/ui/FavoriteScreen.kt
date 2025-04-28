@@ -29,7 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.vector.omdbapp.R
-import com.vector.omdbapp.navigation.Screen
+import com.vector.omdbapp.ui.navigation.Screen
+import com.vector.omdbapp.ui.components.MovieItem
+import com.vector.omdbapp.ui.components.MovieItemSkeleton
+import com.vector.omdbapp.ui.components.NoMoreDataFooter
 import com.vector.omdbapp.util.LocalAppImageLoader
 import com.vector.omdbapp.viewmodel.FavoriteViewModel
 

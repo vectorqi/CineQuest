@@ -28,8 +28,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.vector.omdbapp.R
-import com.vector.omdbapp.navigation.MainNavigation
-import com.vector.omdbapp.navigation.Screen
+import com.vector.omdbapp.ui.navigation.MainNavigation
+import com.vector.omdbapp.ui.navigation.Screen
 import com.vector.omdbapp.util.LocalAppImageLoader
 import com.vector.omdbapp.util.provideGlobalImageLoader
 

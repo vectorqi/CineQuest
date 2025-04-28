@@ -1,4 +1,4 @@
-package com.vector.omdbapp.ui
+package com.vector.omdbapp.ui.components
 
 import android.widget.Toast
 import androidx.compose.foundation.horizontalScroll

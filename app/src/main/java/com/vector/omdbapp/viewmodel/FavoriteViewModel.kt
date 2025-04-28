@@ -50,6 +50,9 @@ class FavoriteViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Toggle favorite status of the current movie.
+     */
     fun toggleFavorite(movie: Movie) {
         viewModelScope.launch {
             val isAlreadyFavorite = repository.isFavorite(movie.imdbID)

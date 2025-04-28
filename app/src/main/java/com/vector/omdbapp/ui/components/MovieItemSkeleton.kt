@@ -1,4 +1,4 @@
-package com.vector.omdbapp.ui
+package com.vector.omdbapp.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

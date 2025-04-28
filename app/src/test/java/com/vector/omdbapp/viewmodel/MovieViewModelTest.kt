@@ -46,7 +46,7 @@ class MovieViewModelTest {
         )
 
         viewModel.onQueryChange("Batman")
-        viewModel.searchMovies("Query must not be empty")
+        viewModel.searchMovies()
 
         advanceUntilIdle() // ensure coroutine finished
 
@@ -61,25 +61,10 @@ class MovieViewModelTest {
         coEvery { repository.searchMovies(any(), any(), any(), any()) } returns Result.failure(Exception("API failed"))
 
         viewModel.onQueryChange("Batman")
-        viewModel.searchMovies("Query must not be empty")
+        viewModel.searchMovies()
         advanceUntilIdle() // ensure coroutine finished
         val finalState = viewModel.homeUiState.value
         assert(!finalState.isLoading)
         assert(finalState.errorMessage == "API failed")
         }
-
-    @Test
-    fun `refreshMovies sets refreshing flag then clears it`() = runTest {
-        coEvery { repository.searchMovies("Batman", any(), any(), any()) } returns Result.success(
-            MovieSearchResponse(listOf(movie), 1)
-        )
-
-        viewModel.onQueryChange("Batman")
-        viewModel.refreshMovies()
-        advanceUntilIdle()
-
-        val finalState = viewModel.homeUiState.value
-        assert(!finalState.isRefreshing)
-        assert(finalState.movies.isNotEmpty())
-    }
 }

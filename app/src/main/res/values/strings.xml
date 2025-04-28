@@ -50,5 +50,5 @@
     <string name="browse_movies">Browse Movies</string>
     <string name="go_explore_hint">Start exploring and discover your favorite movies!</string>
     <string name="reset_filters">Reset Filters</string>
-    <string name="error_network_unavailable">Network unavailable. Please check your connection and try again.</string>
+    <string name="error_network_unavailable">Network unavailable. \nPlease check your connection and try again.</string>
 </resources>

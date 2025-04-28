@@ -62,7 +62,7 @@ fun ErrorState(
 
         Text(
             text = displayedMessage,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )

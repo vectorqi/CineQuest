@@ -1,51 +1,99 @@
-# OMDB App
+# CineQuest 🎬
 
-A demo Android application built with **Jetpack Compose** and **MVVM** architecture, showcasing movie search with pagination using the OMDB API. The code uses **StateFlow**, **snapshotFlow**, and **Channel**/`Flow` for reactive state management.
+**CineQuest** is a modern movie search and discovery Android app built with Jetpack Compose and Material 3, following Android's latest best practices.
 
-## Author
+---
 
-**Vector Qi** 
-
-## Features
-
-- **Movie Search**: Search for movies by title using the [OMDB API](https://www.omdbapi.com/).
-- **Infinite Scroll Pagination**: Automatically loads more movies when scrolling to the bottom of the list.
-- **MVVM Architecture**: Uses `ViewModel` + `Repository` pattern to separate business logic from UI.
-- **Jetpack Compose UI**: Fully declarative approach for building modern UIs.
-- **Network Error Handling**: Displays error or status messages via a `Snackbar`.
-- **Duplicate Filtering**: Filters out repeated movies if the server returns duplicates.
-- **Internationalization**: All user-facing strings are extracted into `strings.xml` for easier localization.
-
-## Tech Stack
-
-- **Kotlin** (language)
-- **Jetpack Compose** (UI)
-- **ViewModel** / **AndroidViewModel** (Lifecycle-aware)
-- **StateFlow** / **Flow** (Reactive state + data flow)
-- **Retrofit + Coroutine** (Network requests in background)
-- **Coil** (Async image loading)
-- **OMDB API** (Movie data source)
-
-## Setup
-
-1. **OMDB API Key**:  
-   - Obtain a free or paid API key from [omdbapi.com/apikey.aspx](http://www.omdbapi.com/apikey.aspx).
-   - In `MovieRepository` or your config, replace `"YOUR_TEST_API_KEY_HERE"` with your own key.
-
-2. **Open project in Android Studio** and ensure you have a recent version of the **Kotlin plugin** installed.
-
-3. **Run the app** on an emulator or physical device (API 21+).
-
-## How to Use
-
-1. **Search**: Type a movie title (e.g., `Batman`) and press the **Search** button.
-2. **Label Toggle**: Each movie item has a "Show Label" / "Hide Label" button that toggles a small label.
-3. **Pagination**: Scroll to the bottom of the list to trigger more results automatically.
-4. **Empty Search**: If the search field is empty, a Snackbar message prompts you to enter a query.
+## 📱 Screenshots
 
 
-## Known Issues / Future Enhancements
+---
 
-- **Refresh**: No "pull-to-refresh" implemented yet.
-- **Paging 3**: Could replace manual pagination logic with official Paging 3 library.
+## ✨ Features
+
+- 🔍 **Search Movies** with skeleton loading animation
+- 🎞️ **View Movie Details** with full metadata
+- 📋 **Manage Favorites** locally (Room database)
+- 🔄 **Infinite Scroll Pagination**
+- 🌙 **Light & Dark Theme** dynamic adaptation
+- 🚫 **Offline/Network Error Handling** with Retry flow
+- ✅ **Hilt DI**, **MVVM Architecture**, **Room Persistence**
+- 🚀 **CI/CD** ready with GitHub Actions
+
+---
+
+## 🎨 Highlights
+
+- 100% Jetpack Compose — no XML layouts
+- Clean MVVM Architecture with clear separation of concerns
+- Material 3 theming with Light and Dark Mode full support
+- Local caching using Room Database for favourites
+- Smooth skeleton loading animation for better UX
+- Friendly network/offline error handling with Retry support
+- Dependency Injection with Hilt
+- Infinite scroll pagination ready
+- CI/CD ready (GitHub Actions integrated)
+
+---
+
+## 🎯 Future Improvements
+
+- 🌐 Integrate TMDb API for live search and data
+- 📦 Modularize project (`:data`, `:domain`, `:ui`)
+- 🧪 Add more Unit and UI Testing (Compose Testing)
+- 📸 Add more dynamic UI (animations, transitions)
+- 🧹 Improve Repository and Data Layer abstraction
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Libraries |
+|:------|:----------|
+| UI | Jetpack Compose, Material 3 |
+| Architecture | MVVM, Hilt (DI), ViewModel |
+| Local Storage | Room Database |
+| Network | Retrofit, Coroutine Flows |
+| Utilities | Kotlin Coroutines |
+| Testing | JUnit |
+| CI/CD | GitHub Actions |
+
+---
+
+## 📦 Project Structure
+
+```bash
+CineQuest/
+├── data/
+│   ├── db/          # Room Database setup (Favorite movies)
+│   ├── model/       # Data models (Movie, Filters)
+│   ├── remote/      # Remote data source (reserved for API integration)
+│   └── repository/  # Repository layer to abstract data sources
+│
+├── di/
+│   └── AppModule.kt # Hilt Dependency Injection setup
+│
+├── ui/
+│   ├── components/   # Reusable Composables (SearchBar, ErrorState, Skeletons)
+│   ├── navigation/   # Navigation setup with NavController
+│   ├── theme/        # Material 3 theming (ColorScheme, Typography)
+│   ├── CineQuestAppScreen.kt # Main Scaffold with BottomNavigation
+│   ├── FavoriteScreen.kt
+│   ├── HomeScreen.kt
+│   ├── MovieDetailScreen.kt
+│   └── PosterScreen.kt
+│
+├── util/
+│   └── LocalAppImageLoader.kt # Global ImageLoader for Coil
+│
+├── viewmodel/
+│   ├── DetailViewModel.kt
+│   ├── FavoriteViewModel.kt
+│   └── MovieViewModel.kt
+│
+├── App.kt         # Application class
+└── MainActivity.kt # Entry point
+
+---
+
 

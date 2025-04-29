@@ -64,6 +64,25 @@
 
 ---
 
+## 🚀 How to Run
+
+Follow these steps to set up and run the CineQuest app:
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/vectorqi/CineQuest.git
+
+2. **Open with Android Studio**
+   Make sure your environment supports Kotlin 1.9+ and Jetpack Compose Compiler.
+
+3. **Sync Gradle**
+   Android Studio will prompt you to sync project Gradle files. Click Sync Now.
+
+4. **Run the app**
+   Use a real device or emulator (API Level 26+ recommended).
+   
+---
+
 ## 📦 Project Structure
 
 ```bash
@@ -97,23 +116,67 @@ CineQuest/
 │
 ├── App.kt         # Application class
 └── MainActivity.kt # Entry point
+```
 
 ---
 
-## 🚀 How to Run
+## 💬 About the Developer
 
-Follow these steps to set up and run the CineQuest app:
+Hi, I'm **Vector Qi** — an experienced and versatile Android Developer, passionate about building scalable, high-performance, and user-centric software solutions across the full product lifecycle.
 
-1. **Clone the repository**
+---
 
-   ```bash
-   git clone https://github.com/vectorqi/CineQuest.git
+### 🚀 Technical Specialties
 
-2. **Open with Android Studio**
-   Make sure your environment supports Kotlin 1.9+ and Jetpack Compose Compiler.
+- 💻 **Android Development Expert**:
+  - Kotlin & Java dual proficiency
+  - Mastery of MVVM, MVI, and MVP architectural patterns
+  - Deep understanding of Jetpack Compose and legacy View system
+  - Extensive experience with RxJava, Coroutines, and Flow for async programming
+  - Multithreading, memory optimization, and app performance tuning
+  - Internationalization (i18n) and cross-device hardware/software compatibility
+  - Troubleshooting and resolving complex technical issues swiftly
+  - Highly efficient development speed with high code quality
 
-3. **Sync Gradle**
-   Android Studio will prompt you to sync project Gradle files. Click Sync Now.
+- 🌐 **Full-Stack Development Skills**:
+  - Proficient in **C#**, **C**, **Python**, **JavaScript**, and **SQL**
+  - Development experience in both **Web Applications** (frontend + backend) and **Server-side Services**
+  - Backend services and RESTful API development
+  - Database design, optimization, and scalable system architecture
+  - Solid understanding of client-server architecture, distributed systems, and cloud deployment basics
 
-4. **Run the app**
-   Use a real device or emulator (API Level 26+ recommended).
+- 🎨 **Product Design and UX Skills**:
+  - Experienced in designing and developing **enterprise-grade mobile applications** across the full product lifecycle
+  - Proficient in **Figma**, **Axure**, and other prototyping/design tools
+  - Strong focus on user experience (UX), usability, and intuitive interface design
+  - Ability to bridge product vision, design, and technical execution seamlessly
+
+- 🧠 **Advanced Tech Knowledge**:
+  - Solid foundation in **Artificial Intelligence (AI)**, **Machine Learning (ML)**, and **Big Data Analytics**
+  - Integration of ML models into mobile and server-side applications
+  - Familiarity with data pipelines, inference serving, and analytics workflows
+
+- 📦 **Software Engineering Excellence**:
+  - Adherence to clean code principles (SOLID, DRY, KISS)
+  - CI/CD automation pipelines using GitHub Actions
+  - Strong emphasis on maintainability, scalability, and modularization
+  - Practical experience in building both monolithic and modular Android project architectures
+
+- 📜 **Certified Professional**:
+  - **PMP® (Project Management Professional) Certified**
+  - **ACP® (Agile Certified Practitioner) Certified**
+  - Expert in Agile methodologies (Scrum, Kanban, SAFe)
+  - Skilled in managing Agile teams and delivering high-quality products iteratively
+
+---
+
+### 📫 Contact Me
+
+- **Email**: [qeemiaomiao@gmail.com](mailto:qeemiaomiao@gmail.com)
+- **LinkedIn**: [https://www.linkedin.com/in/vector-q-b0897a109/](https://www.linkedin.com/in/vector-q-b0897a109/)
+
+---
+
+_Thank you for exploring CineQuest and my work! 🚀_
+
+

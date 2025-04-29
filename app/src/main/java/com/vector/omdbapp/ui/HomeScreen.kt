@@ -27,6 +27,8 @@ import com.vector.omdbapp.ui.components.ErrorState
 import com.vector.omdbapp.ui.components.MovieList
 import com.vector.omdbapp.ui.components.SearchBar
 import com.vector.omdbapp.viewmodel.MovieViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Represents the UI state, including movies, query text, and
@@ -64,8 +66,10 @@ fun HomeScreen(
 
     LaunchedEffect(Unit) {
         if (uiState.movies.isEmpty() && !uiState.isLoading) {
-            viewModel.onQueryChange("Hero")
-            viewModel.searchMovies()
+            withContext(Dispatchers.IO) {
+                viewModel.onQueryChange("Hero")
+                viewModel.searchMovies()
+            }
         }
     }
 

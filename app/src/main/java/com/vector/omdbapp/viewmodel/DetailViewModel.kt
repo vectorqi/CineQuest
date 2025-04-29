@@ -6,7 +6,6 @@ import com.vector.omdbapp.data.model.MovieDetail
 import com.vector.omdbapp.data.model.toMovie
 import com.vector.omdbapp.data.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,7 +41,7 @@ class DetailViewModel @Inject constructor(
     fun loadMovieDetail(imdbId: String) {
         viewModelScope.launch {
             //Todo: to be deleted after demo
-            delay(500)
+//            delay(500)
             _detailUiState.value = DetailUiState(isLoading = true)
 
             val result = repository.getMovieDetail(imdbId)

@@ -8,7 +8,7 @@ import com.vector.omdbapp.data.model.YearFilter
 import com.vector.omdbapp.data.repository.MovieRepository
 import com.vector.omdbapp.ui.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -53,10 +53,9 @@ class MovieViewModel @Inject constructor(
             )
         }
         // Launch a coroutine to load the first page
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.IO){
             //Todo: to be deleted after demo
-            delay(500)
-            val currentQuery = _homeUiState.value.query
+//            delay(500)
             val typeParam = if (_homeUiState.value.selectedType == TypeFilter.ALL) "" else _homeUiState.value.selectedType.value
             val yearParam = if (_homeUiState.value.selectedYear == YearFilter.ALL) "" else _homeUiState.value.selectedYear
             val result = repository.searchMovies(currentQuery,typeParam,yearParam, page = _currentPage)
@@ -98,9 +97,9 @@ class MovieViewModel @Inject constructor(
         // Set the loading state
         _homeUiState.update { it.copy(isPaginating = true) }
         // Launch a coroutine to load the next page
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             //Todo: to be deleted after demo
-            delay(500)
+//            delay(500)
             val typeParam = if (_homeUiState.value.selectedType == TypeFilter.ALL) "" else _homeUiState.value.selectedType.value
             val yearParam = if (_homeUiState.value.selectedYear == YearFilter.ALL) "" else _homeUiState.value.selectedYear
             val result = repository.searchMovies(currentQuery,typeParam,yearParam, page = _currentPage)

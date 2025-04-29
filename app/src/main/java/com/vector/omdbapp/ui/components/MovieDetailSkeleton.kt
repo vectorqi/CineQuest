@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -26,29 +27,41 @@ fun MovieDetailSkeleton() {
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
     ) {
-        // Poster skeleton
+        // Top AppBar Skeleton
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp)
+                .statusBarsPadding()
+                .height(56.dp)
+                .background(brush = shimmerBrush)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Poster Skeleton
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(400.dp)
                 .background(brush = shimmerBrush)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Title skeleton
+        // Title Skeleton
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.6f)
                 .height(28.dp)
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 16.dp, vertical = 4.dp)
                 .background(brush = shimmerBrush)
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Sections skeleton
-        repeat(3) {
+        // Sections Skeleton
+        repeat(2) {
+            // Section Header
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.4f)
@@ -57,7 +70,8 @@ fun MovieDetailSkeleton() {
                     .background(brush = shimmerBrush)
             )
             Spacer(modifier = Modifier.height(8.dp))
-            repeat(3) {
+            // Section Items
+            repeat(5) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

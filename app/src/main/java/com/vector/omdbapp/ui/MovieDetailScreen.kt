@@ -47,10 +47,12 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.vector.omdbapp.R
-import com.vector.omdbapp.ui.navigation.Screen
-import com.vector.omdbapp.ui.components.MovieDetailSkeleton
 import com.vector.omdbapp.ui.components.ErrorState
+import com.vector.omdbapp.ui.components.MovieDetailSkeleton
+import com.vector.omdbapp.ui.navigation.Screen
 import com.vector.omdbapp.viewmodel.DetailViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * A detailed movie screen displaying full information about the movie.
@@ -69,7 +71,9 @@ fun MovieDetailScreen(
     // Trigger detail loading when component is first composed
     LaunchedEffect(imdbId) {
         if (viewModel.detailUiState.value.movie == null) {
+            withContext(Dispatchers.IO) {
             viewModel.loadMovieDetail(imdbId)
+            }
         }
     }
 

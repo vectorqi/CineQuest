@@ -29,10 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.vector.omdbapp.R
-import com.vector.omdbapp.ui.navigation.Screen
 import com.vector.omdbapp.ui.components.MovieItem
 import com.vector.omdbapp.ui.components.MovieItemSkeleton
 import com.vector.omdbapp.ui.components.NoMoreDataFooter
+import com.vector.omdbapp.ui.navigation.Screen
 import com.vector.omdbapp.util.LocalAppImageLoader
 import com.vector.omdbapp.viewmodel.FavoriteViewModel
 
@@ -70,11 +70,6 @@ fun FavoriteScreen(
             }
 
             favorites.isEmpty() -> {
-//                Text(
-//                    text = stringResource(R.string.no_favorite_movies),
-//                    style = MaterialTheme.typography.bodyLarge,
-//                    modifier = Modifier.align(Alignment.Center)
-//                )
                 Column(
                     modifier = Modifier
                         .fillMaxSize()

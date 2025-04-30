@@ -9,6 +9,7 @@ import com.vector.omdbapp.ui.FavoriteScreen
 import com.vector.omdbapp.ui.HomeScreen
 import com.vector.omdbapp.ui.MovieDetailScreen
 import com.vector.omdbapp.ui.PosterScreen
+import com.vector.omdbapp.ui.SplashScreen
 
 @Composable
 fun MainNavigation(navController: NavHostController,
@@ -17,8 +18,11 @@ fun MainNavigation(navController: NavHostController,
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = Screen.Splash.route
     ) {
+        composable(Screen.Splash.route) {
+            SplashScreen(navController)
+        }
         composable(Screen.Home.route) {
             HomeScreen(navController = navController, listState = homeListState)
         }

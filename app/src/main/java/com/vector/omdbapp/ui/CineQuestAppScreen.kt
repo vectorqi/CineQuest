@@ -52,7 +52,7 @@ fun OmdbAppScreen() {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val showAppBars = currentRoute?.startsWith("detail/") != true && currentRoute?.startsWith("poster/") != true
+    val showAppBars = currentRoute != Screen.Splash.route && currentRoute?.startsWith("detail/") != true && currentRoute?.startsWith("poster/") != true
 
     val context = LocalContext.current
     val imageLoader = remember { provideGlobalImageLoader(context) }

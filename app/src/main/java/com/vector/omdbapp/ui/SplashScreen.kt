@@ -1,7 +1,7 @@
 package com.vector.omdbapp.ui
 
+import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -46,7 +46,9 @@ fun SplashScreen(navController: NavHostController) {
 
     val scale by animateFloatAsState(
         targetValue = if (startAnimation) 1f else 0.6f,
-        animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = 800, easing = {
+            OvershootInterpolator(2f).getInterpolation(it)
+        }),
         label = "iconScale"
     )
 

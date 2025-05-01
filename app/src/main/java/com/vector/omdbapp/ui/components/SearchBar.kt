@@ -22,6 +22,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -31,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.vector.omdbapp.R
 import com.vector.omdbapp.data.model.TypeFilter
 import com.vector.omdbapp.data.model.YearFilter
+
 
 /**
  * Composable for the search input field.
@@ -50,12 +55,15 @@ fun SearchBar(
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val maxCharacters = 30
+    var localQuery by rememberSaveable { mutableStateOf(query) }
 
     Column {
         OutlinedTextField(
-            value = query,
+            value = localQuery,
             onValueChange = {
-                if (it.length <= maxCharacters) onQueryChange(it)
+                if (it.length <= maxCharacters) {
+                    localQuery = it
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -69,7 +77,7 @@ fun SearchBar(
                 )
             },
             trailingIcon = {
-                if (query.isNotEmpty()) {
+                if (localQuery.isNotEmpty()) {
                     IconButton(onClick = { onQueryChange("") }) {
                         Icon(
                             imageVector = Icons.Default.Close,
@@ -83,9 +91,10 @@ fun SearchBar(
             keyboardActions = KeyboardActions(
                 onSearch = {
                     keyboardController?.hide()
-                    if (query.trim().isEmpty()) {
+                    if (localQuery.trim().isEmpty()) {
                         Toast.makeText(context, context.getString(R.string.empty_query_message), Toast.LENGTH_SHORT).show()
                     } else {
+                        onQueryChange(localQuery.trim())
                         onSearchClick()
                     }
                 }

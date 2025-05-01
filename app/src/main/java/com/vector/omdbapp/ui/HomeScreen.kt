@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -26,9 +25,8 @@ import com.vector.omdbapp.data.model.YearFilter
 import com.vector.omdbapp.ui.components.ErrorState
 import com.vector.omdbapp.ui.components.MovieList
 import com.vector.omdbapp.ui.components.SearchBar
+import com.vector.omdbapp.ui.components.SearchHintState
 import com.vector.omdbapp.viewmodel.MovieViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 /**
  * Represents the UI state, including movies, query text, and
@@ -57,21 +55,12 @@ data class HomeUiState(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
-    viewModel: MovieViewModel = hiltViewModel(),
     listState: LazyListState,
     navController: NavHostController,
 ) {
+    val viewModel: MovieViewModel = hiltViewModel()
     val uiState by viewModel.homeUiState.collectAsState()
     val context = LocalContext.current
-
-    LaunchedEffect(Unit) {
-        if (uiState.movies.isEmpty() && !uiState.isLoading) {
-            withContext(Dispatchers.IO) {
-                viewModel.onQueryChange("Hero")
-                viewModel.searchMovies()
-            }
-        }
-    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -108,6 +97,10 @@ fun HomeScreen(
                             }
                         }
                     )
+                }
+
+                uiState.movies.isEmpty() && !uiState.isLoading -> {
+                    SearchHintState()
                 }
 
                 else -> {

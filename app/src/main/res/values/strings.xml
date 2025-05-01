@@ -27,6 +27,11 @@
     <string name="icon_splash">CineQuest Logo</string>
     <string name="splash_slogan">Your cinematic journey starts here.</string>
 
+    <!-- SearchHintState -->
+    <string name="search_hint_title">Start exploring movies!</string>
+    <string name="search_hint_desc">Use the search bar above to find your favorite films.</string>
+    <string name="search_hint_icon_desc">Search icon</string>
+
     <!-- MovieDetailScreen -->
     <string name="movie_detail_title">Movie Detail</string>
     <string name="no_movie_error">Movie not found or error occurred.</string>

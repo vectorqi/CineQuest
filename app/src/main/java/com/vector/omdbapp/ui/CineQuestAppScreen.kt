@@ -114,7 +114,7 @@ fun OmdbAppScreen() {
                     MainNavigation(
                         navController = navController,
                         homeListState = homeListState,
-                        favoriteListState = favoriteListState
+                        favoriteListState = favoriteListState,
                     )
                 }
             }
@@ -123,7 +123,7 @@ fun OmdbAppScreen() {
                 MainNavigation(
                     navController = navController,
                     homeListState = homeListState,
-                    favoriteListState = favoriteListState
+                    favoriteListState = favoriteListState,
                 )
             }
         }

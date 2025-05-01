@@ -2,6 +2,7 @@ package com.vector.omdbapp.ui.navigation
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,10 +13,12 @@ import com.vector.omdbapp.ui.PosterScreen
 import com.vector.omdbapp.ui.SplashScreen
 
 @Composable
-fun MainNavigation(navController: NavHostController,
-                   homeListState: LazyListState,
-                   favoriteListState: LazyListState
+fun MainNavigation(
+    navController: NavHostController,
+    homeListState: LazyListState,
+    favoriteListState: LazyListState,
 ) {
+    val stateHolder = rememberSaveableStateHolder()
     NavHost(
         navController = navController,
         startDestination = Screen.Splash.route
@@ -23,8 +26,11 @@ fun MainNavigation(navController: NavHostController,
         composable(Screen.Splash.route) {
             SplashScreen(navController)
         }
+
         composable(Screen.Home.route) {
-            HomeScreen(navController = navController, listState = homeListState)
+            stateHolder.SaveableStateProvider(key = Screen.Home.route) {
+                HomeScreen(navController = navController, listState = homeListState)
+            }
         }
         composable(Screen.Favorites.route) {
             FavoriteScreen(navController = navController, listState = favoriteListState)

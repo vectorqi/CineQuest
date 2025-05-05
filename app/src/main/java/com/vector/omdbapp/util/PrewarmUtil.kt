@@ -1,3 +1,5 @@
+@file:OptIn(InternalCoroutinesApi::class)
+
 package com.vector.omdbapp.util
 
 import android.util.Log
@@ -6,6 +8,8 @@ import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.data.remote.RetrofitClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.internal.LockFreeLinkedListNode
 import kotlinx.coroutines.launch
 
 /**
@@ -16,19 +20,24 @@ object PrewarmUtil {
     /**
      * Call this during app startup to preload classes that may cause VerifyClass blocking on UI thread.
      */
-    fun prewarmRetrofitAndGson() {
+    fun prewarmCriticalClasses() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Force Retrofit to verify class structure
+                // Retrofit & Gson
                 RetrofitClient.api.let { }
-
-                // Force Gson class binding by parsing a dummy object
                 Gson().toJson(Movie(imdbID = "tt0000000", title = "", year = "", type = "", posterUrl = ""))
 
-                Log.d("Prewarm", "Retrofit and Gson prewarmed successfully.")
+                // Kotlin coroutines internal class
+                LockFreeLinkedListNode()
+
+                // Kotlin ranges
+                (1..3).firstOrNull()
+
+                Log.d("Prewarm", "Critical classes prewarmed.")
             } catch (e: Exception) {
-                Log.w("Prewarm", "Failed to prewarm Retrofit or Gson: ${e.message}")
+                Log.w("Prewarm", "Prewarm failed: ${e.message}")
             }
         }
     }
+
 }

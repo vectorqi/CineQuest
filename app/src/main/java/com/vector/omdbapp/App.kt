@@ -9,6 +9,6 @@ class App : Application(){
     override fun onCreate() {
         super.onCreate()
         // Prewarm Retrofit and Gson to avoid VerifyClass bottleneck on main thread
-        PrewarmUtil.prewarmRetrofitAndGson()
+        PrewarmUtil.prewarmCriticalClasses()
     }
 }

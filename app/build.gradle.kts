@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -22,6 +25,18 @@ android {
     namespace = "com.vector.omdbapp"
     compileSdk = 36
 
+    val releaseProps = Properties().apply {
+        load(FileInputStream(File(rootDir, "release.properties")))
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file(releaseProps["RELEASE_STORE_FILE"] as String)
+            storePassword = releaseProps["RELEASE_STORE_PASSWORD"] as String
+            keyAlias = releaseProps["RELEASE_KEY_ALIAS"] as String
+            keyPassword = releaseProps["RELEASE_KEY_PASSWORD"] as String
+        }
+    }
     defaultConfig {
         applicationId = "com.vector.omdbapp"
         minSdk = 27
@@ -35,10 +50,14 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            isMinifyEnabled = false
         }
     }
 
@@ -107,4 +126,6 @@ dependencies {
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)//Hilt library doesn't support ksp yet.
     implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.androidx.splashscreen)
+    implementation(libs.androidx.startup)
 }

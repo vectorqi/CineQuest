@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "OMDBAPP"
+rootProject.name = "CineQuest"
 include(":app")

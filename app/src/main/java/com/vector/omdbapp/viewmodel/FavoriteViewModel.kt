@@ -7,7 +7,6 @@ import com.vector.omdbapp.data.model.Movie
 import com.vector.omdbapp.data.model.toDomain
 import com.vector.omdbapp.data.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,24 +18,41 @@ import javax.inject.Inject
 /**
  * ViewModel responsible for managing user's favorite movies.
  * It provides reactive state for UI and interacts with the DAO layer.
+ *
+ * Note: We intentionally avoid eager loading by using [loadFavoritesIfNeeded] instead of [init] block.
  */
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
     private val favoriteMovieDao: FavoriteMovieDao,
     private val repository: MovieRepository
 ) : ViewModel() {
-
+    private var hasLoaded = false
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
     private val _favoriteList = MutableStateFlow<List<Movie>>(emptyList())
     val favoriteList: StateFlow<List<Movie>> = _favoriteList.asStateFlow()
 
-    init {
-        // Start collecting the favorite list from Room database
+//    init {
+//        // Start collecting the favorite list from Room database
+//        viewModelScope.launch {
+//            favoriteMovieDao.getAllFavorites()
+//                .map { list -> list.map { it.toDomain() } }
+//                .catch {  // catch any unexpected error from DAO
+//                    _favoriteList.value = emptyList()  // Fallback to empty
+//                    _isLoading.value = false
+//                }
+//                .collect { movies ->
+//                    _favoriteList.value = movies
+//                    _isLoading.value = false
+//                }
+//        }
+//    }
+
+    fun loadFavoritesIfNeeded() {
+        if (hasLoaded) return
+        hasLoaded = true
         viewModelScope.launch {
-            //Todo: to be deleted after demo
-            delay(500)
             favoriteMovieDao.getAllFavorites()
                 .map { list -> list.map { it.toDomain() } }
                 .catch {  // catch any unexpected error from DAO
@@ -49,7 +65,6 @@ class FavoriteViewModel @Inject constructor(
                 }
         }
     }
-
     /**
      * Toggle favorite status of the current movie.
      */

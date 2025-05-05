@@ -1,21 +1,77 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# === Basic Configuration ===
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Retain source file and line number for crash stack traces
+-keepattributes SourceFile,LineNumberTable
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Ignore warnings to prevent build-time noise
+-ignorewarnings
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# === Gson and Retrofit Support ===
+
+# Keep all Gson and Retrofit classes to ensure proper JSON serialization/deserialization
+-keep class com.google.gson.** { *; }
+-keep class retrofit2.** { *; }
+
+# Keep Retrofit HTTP annotations (e.g., @GET, @POST)
+-keepclassmembers class * {
+    @retrofit2.http.* <methods>;
+}
+
+# Suppress warnings from these libraries
+-dontwarn com.google.gson.**
+-dontwarn retrofit2.**
+
+# Keep your app's data model classes (used for JSON mapping)
+-keep class com.vector.omdbapp.data.model.** { *; }
+
+# === Hilt (Dependency Injection) ===
+
+# Keep annotation metadata used by Hilt
+-keepattributes *Annotation*
+
+# Keep Hilt internal and generated classes
+-keep class dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
+-keep class dagger.internal.codegen.** { *; }
+
+# Suppress warnings from Hilt
+-dontwarn dagger.hilt.**
+
+# === Jetpack Compose ===
+
+# Keep all Compose classes and suppress related warnings
+-keep class androidx.compose.** { *; }
+-dontwarn androidx.compose.**
+
+# Keep ViewModel and ViewModelProvider (used in Compose + Hilt)
+-keep class androidx.lifecycle.ViewModel
+-keep class androidx.lifecycle.ViewModelProvider
+
+# Required for Kotlin metadata and coroutines used by Compose
+-keep class kotlin.Metadata
+-keep class kotlin.coroutines.** { *; }
+-dontwarn kotlin.coroutines.**
+
+# === Coil (Image Loading Library) ===
+
+# Keep Coil classes to prevent runtime image loading issues
+-keep class coil.** { *; }
+-dontwarn coil.**
+
+# === App Entry Points ===
+
+# Keep Application and MainActivity classes
+-keep class com.vector.omdbapp.App { *; }
+-keep class com.vector.omdbapp.MainActivity { *; }
+
+# === SplashScreen & Navigation ===
+
+# Keep AndroidX SplashScreen classes
+-keep class androidx.core.splashscreen.** { *; }
+-dontwarn androidx.core.splashscreen.**
+
+# Keep Navigation Compose related classes
+-keep class androidx.navigation.** { *; }
+
+# Keep Hilt-generated dependency classes
+-keep class hilt_aggregated_deps.** { *; }

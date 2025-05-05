@@ -53,7 +53,7 @@ fun TabScreen(    navController: NavHostController,
             if (selectedTab == 0) {
                 HomeScreen(navController = navController, listState = homeListState)
             } else {
-                FavoriteScreen(navController = navController, listState = favoriteListState,onBrowseClick = { onTabSelected(0)})
+                FavoriteScreen(navController = navController, listState = favoriteListState, onBrowseClick = { onTabSelected(0)})
             }
         }
     }

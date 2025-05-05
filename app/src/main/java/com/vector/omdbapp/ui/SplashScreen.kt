@@ -54,9 +54,9 @@ fun SplashScreen(navController: NavHostController) {
 
     LaunchedEffect(Unit) {
         startAnimation = true
-        delay(600)
+        delay(500)
         showSlogan = true
-        delay(1000)
+        delay(700)
         visible = false
         delay(300)
         navController.navigate(Screen.Main.route) {

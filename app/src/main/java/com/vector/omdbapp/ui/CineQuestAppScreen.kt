@@ -1,33 +1,30 @@
+@file:Suppress("DEPRECATION")
+
 package com.vector.omdbapp.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.vector.omdbapp.R
 import com.vector.omdbapp.ui.navigation.MainNavigation
 import com.vector.omdbapp.ui.navigation.Screen
 import com.vector.omdbapp.util.LocalAppImageLoader
@@ -42,10 +39,8 @@ enum class BottomNavItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OmdbAppScreen() {
+fun CineQuestAppScreen() {
     val navController = rememberNavController()
-    val homeListState = rememberLazyListState()
-    val favoriteListState = rememberLazyListState()
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = !isSystemInDarkTheme()
     val backgroundColor = MaterialTheme.colorScheme.background
@@ -56,6 +51,13 @@ fun OmdbAppScreen() {
 
     val context = LocalContext.current
     val imageLoader = remember { provideGlobalImageLoader(context) }
+    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
+    val homeListState = rememberSaveable(saver = LazyListState.Saver) {
+        LazyListState()
+    }
+    val favoriteListState = rememberSaveable(saver = LazyListState.Saver) {
+        LazyListState()
+    }
 
     SideEffect {
         systemUiController.setSystemBarsColor(
@@ -66,65 +68,26 @@ fun OmdbAppScreen() {
 
     CompositionLocalProvider(LocalAppImageLoader provides imageLoader) {
         if (showAppBars) {
-            Scaffold(
-                bottomBar = {
-                    NavigationBar {
-                        NavigationBarItem(
-                            selected = currentRoute == Screen.Home.route,
-                            onClick = {
-                                navController.navigate(Screen.Home.route) {
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = {
-                                Icon(
-                                    BottomNavItem.Home.icon,
-                                    contentDescription = stringResource(R.string.tab_home)
-                                )
-                            },
-                            label = { Text(stringResource(R.string.tab_home)) }
+                    MainNavigation(navController = navController)
+                    if (navController.currentBackStackEntry?.destination?.route in listOf(
+                            Screen.Splash.route,
+                            Screen.MovieDetail.route,
+                            Screen.Poster.route
                         )
-                        NavigationBarItem(
-                            selected = currentRoute == Screen.Favorites.route,
-                            onClick = {
-                                navController.navigate(Screen.Favorites.route) {
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = {
-                                Icon(
-                                    BottomNavItem.Favorites.icon,
-                                    contentDescription = stringResource(R.string.tab_favorites)
-                                )
-                            },
-                            label = { Text(stringResource(R.string.tab_favorites)) }
+                    ) {
+                        // do nothing
+                    } else {
+                        TabScreen(
+                            navController = navController,
+                            selectedTab = selectedTab,
+                            onTabSelected = { selectedTab = it },
+                            homeListState = homeListState,
+                            favoriteListState = favoriteListState
                         )
                     }
-                }
-            ) { innerPadding ->
-                Box(modifier = Modifier.padding(innerPadding)) {
-                    MainNavigation(
-                        navController = navController,
-                        homeListState = homeListState,
-                        favoriteListState = favoriteListState,
-                    )
-                }
-            }
         } else {
             Box(modifier = Modifier.fillMaxSize()) {
-                MainNavigation(
-                    navController = navController,
-                    homeListState = homeListState,
-                    favoriteListState = favoriteListState,
-                )
+                MainNavigation(navController = navController)
             }
         }
     }

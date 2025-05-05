@@ -6,8 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.core.view.WindowCompat
-import com.vector.omdbapp.ui.OmdbAppScreen
-import com.vector.omdbapp.ui.theme.OMDBAPPTheme
+import com.vector.omdbapp.ui.CineQuestAppScreen
+import com.vector.omdbapp.ui.theme.APPTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @Suppress("DEPRECATION")
@@ -22,11 +22,11 @@ class MainActivity : ComponentActivity() {
         windowInsetsController.isAppearanceLightStatusBars = true
         windowInsetsController.isAppearanceLightNavigationBars = true
         setContent {
-            OMDBAPPTheme(
+            APPTheme(
                 darkTheme = isSystemInDarkTheme(),
                 dynamicColor = true
             ) {
-                OmdbAppScreen()
+                CineQuestAppScreen()
             }
         }
     }

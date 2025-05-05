@@ -32,20 +32,23 @@ import com.vector.omdbapp.R
 import com.vector.omdbapp.ui.components.MovieItem
 import com.vector.omdbapp.ui.components.MovieItemSkeleton
 import com.vector.omdbapp.ui.components.NoMoreDataFooter
-import com.vector.omdbapp.ui.navigation.Screen
 import com.vector.omdbapp.util.LocalAppImageLoader
 import com.vector.omdbapp.viewmodel.FavoriteViewModel
 
 /**
- * FavoriteScreen displays a list of movies the user has marked as favorites.
- * Shows a loading spinner initially and a message if no favorites exist.
+ * Displays the list of favorite movies or an empty state with a "Browse Movies" action.
+ *
+ * @param navController Navigation controller for movie detail navigation.
+ * @param listState Scroll position of the favorite movie list.
+ * @param onBrowseClick Callback invoked when user wants to switch to the Home tab to browse movies.
  */
 @Composable
 fun FavoriteScreen(
-    viewModel: FavoriteViewModel = hiltViewModel(),
+    listState: LazyListState,
     navController: NavHostController,
-    listState: LazyListState
+    onBrowseClick: () -> Unit
 ) {
+    val viewModel: FavoriteViewModel = hiltViewModel()
     val favorites by viewModel.favoriteList.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val favoriteViewModel: FavoriteViewModel = hiltViewModel()
@@ -70,53 +73,7 @@ fun FavoriteScreen(
             }
 
             favorites.isEmpty() -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = null,
-                        modifier = Modifier.run { size(64.dp) },
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = stringResource(R.string.no_favorite_movies),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = stringResource(R.string.go_explore_hint),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Button(
-                        onClick = {
-                            navController.navigate(Screen.Home.route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }
-                    ) {
-                        Text(text = stringResource(R.string.browse_movies))
-                    }
-                }
-
+                FavoriteEmptyView(onBrowseClick = onBrowseClick)
             }
 
             else -> {
@@ -140,6 +97,54 @@ fun FavoriteScreen(
 
                 }
             }
+        }
+    }
+}
+
+/**
+ * Displays an empty state when there are no favorite movies.
+ * Provides a button to navigate back to the Home tab for browsing.
+ *
+ * @param onBrowseClick Callback invoked when user clicks the "Browse Movies" button.
+ */
+@Composable
+fun FavoriteEmptyView(onBrowseClick: () -> Unit){
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.FavoriteBorder,
+            contentDescription = null,
+            modifier = Modifier.run { size(64.dp) },
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = stringResource(R.string.no_favorite_movies),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = stringResource(R.string.go_explore_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = { onBrowseClick() }
+        ) {
+            Text(text = stringResource(R.string.browse_movies))
         }
     }
 }

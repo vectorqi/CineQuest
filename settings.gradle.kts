@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "CineQuest"
 include(":app")
+include(":benchmark")

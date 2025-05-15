@@ -62,11 +62,13 @@ android {
             isMinifyEnabled = false
             manifestPlaceholders["profileable"] = "false"
         }
+
         create("benchmark") {
             initWith(buildTypes.getByName("release"))
             signingConfig = signingConfigs.getByName("debug")
             matchingFallbacks += listOf("release")
             isDebuggable = false
+            proguardFiles("baseline-profile_rules.pro")
         }
     }
 
@@ -138,4 +140,5 @@ dependencies {
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.androidx.splashscreen)
     implementation(libs.androidx.startup)
+    implementation(libs.androidx.profileinstaller)
 }

@@ -1,5 +1,6 @@
 package com.vector.omdbapp.benchmark
 
+import androidx.benchmark.macro.CompilationMode
 import androidx.benchmark.macro.StartupMode
 import androidx.benchmark.macro.StartupTimingMetric
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
@@ -21,15 +22,24 @@ import org.junit.runner.RunWith
  * for investigating your app's performance.
  */
 @RunWith(AndroidJUnit4::class)
-class ExampleStartupBenchmark {
+class StartupBenchmark {
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
 
     @Test
-    fun startup() = benchmarkRule.measureRepeated(
+    fun startupCompilationNone():Unit = startup(CompilationMode.None())
+
+    @Test
+    fun startupCompilationPartial():Unit = startup(CompilationMode.Partial())
+
+    @Test
+    fun startupCompilationFull():Unit = startup(CompilationMode.Full())
+
+    fun startup(compilationMode : CompilationMode): Unit = benchmarkRule.measureRepeated(
         packageName = "com.vector.omdbapp",
         metrics = listOf(StartupTimingMetric()),
         iterations = 5,
+        compilationMode = compilationMode,
         startupMode = StartupMode.COLD
     ) {
         pressHome()

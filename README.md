@@ -21,8 +21,6 @@
 - 🔄 **Infinite Scroll Pagination**
 - 🌙 **Light & Dark Theme** dynamic adaptation
 - 🚫 **Offline/Network Error Handling** with Retry flow
-- ✅ **Hilt DI**, **MVVM Architecture**, **Room Persistence**
-- 🚀 **CI/CD** ready with GitHub Actions
 
 ---
 
@@ -35,6 +33,7 @@
 - Smooth skeleton loading animation for better UX
 - Friendly network/offline error handling with Retry support
 - Dependency Injection with Hilt
+- Cold start optimized with Baseline Profiles & PrewarmInitializer
 - Infinite scroll pagination ready
 - CI/CD ready (GitHub Actions integrated)
 
@@ -45,22 +44,25 @@
 - 🌐 Integrate TMDb API for live search and data
 - 📦 Modularize project (`:data`, `:domain`, `:ui`)
 - 🧪 Add more Unit and UI Testing (Compose Testing)
-- 📸 Add more dynamic UI (animations, transitions)
 - 🧹 Improve Repository and Data Layer abstraction
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Libraries |
-|:------|:----------|
-| UI | Jetpack Compose, Material 3 |
-| Architecture | MVVM, Hilt (DI), ViewModel |
-| Local Storage | Room Database |
-| Network | Retrofit, Coroutine Flows |
-| Utilities | Kotlin Coroutines |
-| Testing | JUnit, MockK |
-| CI/CD | GitHub Actions |
+| Layer             | Technology                          |
+|------------------|--------------------------------------|
+| Language         | Kotlin                               |
+| UI Framework     | Jetpack Compose                      |
+| Architecture     | MVVM + StateFlow                     |
+| DI Framework     | Hilt                                 |
+| Networking       | Retrofit + GSON                      |
+| Database         | Room                                 |
+| Image Loading    | Coil                                 |
+| Testing          | JUnit, MockK, Turbine, Espresso      |
+| CI/CD            | GitHub Actions                       |
+| Optimization     | Baseline Profiles, PrewarmInitializer, Memory tracking |
+
 
 ---
 
@@ -86,36 +88,36 @@ Follow these steps to set up and run the CineQuest app:
 ## 📦 Project Structure
 
 ```bash
+## 🧱 Project Structure
+
 CineQuest/
-├── data/
-│   ├── db/          # Room Database setup (Favorite movies)
-│   ├── model/       # Data models (Movie, Filters)
-│   ├── remote/      # Remote data source (reserved for API integration)
-│   └── repository/  # Repository layer to abstract data sources
-│
-├── di/
-│   └── AppModule.kt # Hilt Dependency Injection setup
-│
-├── ui/
-│   ├── components/   # Reusable Composables (SearchBar, ErrorState, Skeletons)
-│   ├── navigation/   # Navigation setup with NavController
-│   ├── theme/        # Material 3 theming (ColorScheme, Typography)
-│   ├── CineQuestAppScreen.kt # Main Scaffold with BottomNavigation
-│   ├── FavoriteScreen.kt
-│   ├── HomeScreen.kt
-│   ├── MovieDetailScreen.kt
-│   └── PosterScreen.kt
-│
-├── util/
-│   └── LocalAppImageLoader.kt # Global ImageLoader for Coil
-│
-├── viewmodel/
-│   ├── DetailViewModel.kt
-│   ├── FavoriteViewModel.kt
-│   └── MovieViewModel.kt
-│
-├── App.kt         # Application class
-└── MainActivity.kt # Entry point
+├── app/                          # Main Android app module
+│   └── com.vector.omdbapp/
+│       ├── data/                # Data layer: db, models, repository, remote API
+│       │   ├── db/
+│       │   ├── model/
+│       │   ├── remote/
+│       │   └── repository/
+│       ├── di/                  # Dependency injection (Hilt modules)
+│       ├── ui/                  # UI layer: screens, components, navigation
+│       │   ├── components/
+│       │   ├── navigation/
+│       │   ├── theme/
+│       │   ├── CineQuestAppScreen.kt
+│       │   ├── HomeScreen.kt
+│       │   ├── FavoriteScreen.kt
+│       │   ├── MovieDetailScreen.kt
+│       │   ├── PosterScreen.kt
+│       │   └── SplashScreen.kt
+│       ├── util/                # Utilities: image loader, prewarm
+│       │   ├── LocalAppImageLoader.kt
+│       │   ├── PrewarmInitializer.kt
+│       │   └── PrewarmUtil.kt
+│       └── viewmodel/          # ViewModels for each screen
+├── benchmark/                   # Baseline Profiles & startup benchmarking
+│   └── com.vector.omdbapp.benchmark/
+│       ├── BaselineProfileGenerator.kt
+│       └── StartupBenchmark.kt
 ```
 
 ---

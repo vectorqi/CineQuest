@@ -19,7 +19,7 @@ import javax.inject.Inject
  * ViewModel responsible for managing user's favorite movies.
  * It provides reactive state for UI and interacts with the DAO layer.
  *
- * Note: We intentionally avoid eager loading by using [loadFavoritesIfNeeded] instead of [init] block.
+ * Note: We intentionally avoid eager loading by using [loadFavoritesIfNeeded].
  */
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
@@ -32,22 +32,6 @@ class FavoriteViewModel @Inject constructor(
 
     private val _favoriteList = MutableStateFlow<List<Movie>>(emptyList())
     val favoriteList: StateFlow<List<Movie>> = _favoriteList.asStateFlow()
-
-//    init {
-//        // Start collecting the favorite list from Room database
-//        viewModelScope.launch {
-//            favoriteMovieDao.getAllFavorites()
-//                .map { list -> list.map { it.toDomain() } }
-//                .catch {  // catch any unexpected error from DAO
-//                    _favoriteList.value = emptyList()  // Fallback to empty
-//                    _isLoading.value = false
-//                }
-//                .collect { movies ->
-//                    _favoriteList.value = movies
-//                    _isLoading.value = false
-//                }
-//        }
-//    }
 
     fun loadFavoritesIfNeeded() {
         if (hasLoaded) return
@@ -65,6 +49,7 @@ class FavoriteViewModel @Inject constructor(
                 }
         }
     }
+
     /**
      * Toggle favorite status of the current movie.
      */
@@ -77,6 +62,18 @@ class FavoriteViewModel @Inject constructor(
             } else {
                 repository.addFavorite(movie)
             }
+            refreshFavorites()
         }
+    }
+
+    private suspend fun refreshFavorites() {
+        favoriteMovieDao.getAllFavorites()
+            .map { list -> list.map { it.toDomain() } }
+            .catch {
+                _favoriteList.value = emptyList()
+            }
+            .collect { movies ->
+                _favoriteList.value = movies
+            }
     }
 }

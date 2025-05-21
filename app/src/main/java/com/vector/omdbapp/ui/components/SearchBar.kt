@@ -63,6 +63,7 @@ fun SearchBar(
             onValueChange = {
                 if (it.length <= maxCharacters) {
                     localQuery = it
+                    onQueryChange(it)
                 }
             },
             modifier = Modifier

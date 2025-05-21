@@ -78,7 +78,10 @@ fun SearchBar(
             },
             trailingIcon = {
                 if (localQuery.isNotEmpty()) {
-                    IconButton(onClick = { onQueryChange("") }) {
+                    IconButton(onClick = {
+                        localQuery = ""
+                        onQueryChange("")
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = stringResource(id = R.string.clear_text_desc)

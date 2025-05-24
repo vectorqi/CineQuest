@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     id("org.jetbrains.kotlin.kapt")
-    alias(libs.plugins.baselineprofile)
+//    alias(libs.plugins.baselineprofile)
 }
 
 hilt {
@@ -52,7 +52,7 @@ android {
         release {
             isMinifyEnabled = false
             isShrinkResources = false
-            manifestPlaceholders["profileable"] = "true"
+//            manifestPlaceholders["profileable"] = "true"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -60,16 +60,16 @@ android {
         }
         debug {
             isMinifyEnabled = false
-            manifestPlaceholders["profileable"] = "false"
+//            manifestPlaceholders["profileable"] = "false"
         }
 
-        create("benchmark") {
-            initWith(buildTypes.getByName("release"))
-            signingConfig = signingConfigs.getByName("debug")
-            matchingFallbacks += listOf("release")
-            isDebuggable = false
-            proguardFiles("baseline-profile_rules.pro")
-        }
+//        create("benchmark") {
+//            initWith(buildTypes.getByName("release"))
+//            signingConfig = signingConfigs.getByName("debug")
+//            matchingFallbacks += listOf("release")
+//            isDebuggable = false
+//            proguardFiles("baseline-profile_rules.pro")
+//        }
     }
 
     compileOptions {
@@ -140,5 +140,5 @@ dependencies {
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.androidx.splashscreen)
     implementation(libs.androidx.startup)
-    implementation(libs.androidx.profileinstaller)
+//    implementation(libs.androidx.profileinstaller)
 }

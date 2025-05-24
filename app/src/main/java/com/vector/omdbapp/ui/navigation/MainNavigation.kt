@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.vector.omdbapp.ui.CineQuestAppScreen
 import com.vector.omdbapp.ui.MovieDetailScreen
 import com.vector.omdbapp.ui.PosterScreen
 import com.vector.omdbapp.ui.SplashScreen
+import com.vector.omdbapp.ui.TabScaffoldScreen
 
 @Composable
 fun MainNavigation(navController: NavHostController) {
@@ -19,7 +19,7 @@ fun MainNavigation(navController: NavHostController) {
             SplashScreen(navController)
         }
         composable(Screen.Main.route) {
-            CineQuestAppScreen()
+            TabScaffoldScreen()
         }
         composable(Screen.MovieDetail.route) { backStackEntry ->
             val imdbID = backStackEntry.arguments?.getString("imdbID") ?: ""

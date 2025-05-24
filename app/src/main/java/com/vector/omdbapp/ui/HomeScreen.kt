@@ -19,38 +19,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.vector.omdbapp.R
-import com.vector.omdbapp.data.model.Movie
-import com.vector.omdbapp.data.model.TypeFilter
-import com.vector.omdbapp.data.model.YearFilter
 import com.vector.omdbapp.ui.components.ErrorState
 import com.vector.omdbapp.ui.components.MovieList
 import com.vector.omdbapp.ui.components.SearchBar
-import com.vector.omdbapp.ui.components.SearchHintState
 import com.vector.omdbapp.viewmodel.MovieViewModel
-
-/**
- * Represents the UI state, including movies, query text, and
- * status flags for loading, pagination, etc.
- *
- * @param query Current search keyword.
- * @param movies The current list of displayed movies.
- * @param errorMessage Error message for any failed requests.
- * @param isLoading Indicates the initial (main) loading is in progress.
- * @param isPaginating Indicates if a subsequent "load more" request is in progress.
- * @param noMoreData True when we've loaded all possible data.
- * @param totalResults Number of total hits reported by OMDB.
- */
-data class HomeUiState(
-    val query: String = "",
-    val selectedYear: String = YearFilter.ALL,
-    val selectedType: TypeFilter = TypeFilter.ALL,// "all" or "" means no filter
-    val movies: List<Movie> = emptyList(),
-    val errorMessage: String? = null,
-    val isLoading: Boolean = false,
-    val isPaginating: Boolean = false,
-    val noMoreData: Boolean = false,  // Prevents further loading after final page
-    val totalResults: Int = 0
-)
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -59,7 +31,10 @@ fun HomeScreen(
     navController: NavHostController,
 ) {
     val viewModel: MovieViewModel = hiltViewModel()
-    val uiState by viewModel.homeUiState.collectAsState()
+    val query by viewModel.query.collectAsState()
+    val selectedYear by viewModel.selectedYear.collectAsState()
+    val selectedType by viewModel.selectedType.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
     val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -71,22 +46,22 @@ fun HomeScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 SearchBar(
-                    query = uiState.query,
+                    query = query,
                     onQueryChange = viewModel::onQueryChange,
                     onSearchClick = { viewModel.searchMovies() },
-                    selectedYear = uiState.selectedYear,
+                    selectedYear = selectedYear,
                     onYearChange = viewModel::onYearChange,
-                    selectedType = uiState.selectedType,
+                    selectedType = selectedType,
                     onTypeChange = viewModel::onTypeChange
                 )
             }
 
             when {
-                uiState.errorMessage != null -> {
+                errorMessage != null -> {
                     ErrorState(
-                        message = uiState.errorMessage.toString(),
+                        message = errorMessage.toString(),
                         onRetry = {
-                            if (uiState.query.trim().isEmpty()) {
+                            if (query.trim().isEmpty()) {
                                 Toast.makeText(
                                     context,
                                     context.getString(R.string.empty_query_message),
@@ -97,10 +72,6 @@ fun HomeScreen(
                             }
                         }
                     )
-                }
-
-                uiState.movies.isEmpty() && !uiState.isLoading -> {
-                    SearchHintState()
                 }
 
                 else -> {

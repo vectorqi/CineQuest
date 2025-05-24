@@ -3,8 +3,6 @@ package com.vector.omdbapp.ui.navigation
 sealed class Screen(val route: String) {
     data object Splash : Screen("splash")
     data object Main : Screen("main")
-//    data object Home : Screen("home")
-//    data object Favorites : Screen("favorites")
     data object MovieDetail : Screen("detail/{imdbID}") {
         fun createRoute(imdbID: String) = "detail/$imdbID"
     }

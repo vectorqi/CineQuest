@@ -1,5 +1,6 @@
 package com.vector.omdbapp.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,9 +42,17 @@ fun MovieList(
         mutableStateOf(favoriteList.associateBy { it.imdbID })
     }
 
-    val uiState by viewModel.homeUiState.collectAsState()
+    val movies by viewModel.movies.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val isPaginating by viewModel.isPaginating.collectAsState()
+    val noMoreData by viewModel.noMoreData.collectAsState()
+
+    val showSearchHint = remember(movies, isLoading) {
+        movies.isEmpty() && !isLoading
+    }
     val imageLoader = LocalAppImageLoader.current
 
+    //Handle list scrolling event
     @OptIn(FlowPreview::class)
     LaunchedEffect(Unit) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
@@ -52,11 +61,11 @@ fun MovieList(
             .distinctUntilChanged()
             .collect { lastVisibleIndex ->
                 if (
-                    !uiState.noMoreData &&
-                    !uiState.isLoading &&
-                    !uiState.isPaginating &&
-                    uiState.movies.isNotEmpty() &&
-                    lastVisibleIndex >= uiState.movies.size - 1 &&
+                    !noMoreData &&
+                    !isLoading &&
+                    !isPaginating &&
+                    movies.isNotEmpty() &&
+                    lastVisibleIndex >= movies.size - 1 &&
                     viewModel.currentPage > 1 &&
                     listState.firstVisibleItemIndex > 0
                 ) {
@@ -69,46 +78,52 @@ fun MovieList(
             }
     }
 
-    LazyColumn(
-        state = listState,
-        contentPadding = PaddingValues(top = 12.dp, bottom = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+    if (showSearchHint) {
+        Log.d("MovieList", "SearchHintState 显示了")
+        SearchHintState()
+    }else {
 
-        if (uiState.movies.isEmpty() && uiState.isLoading) {
-            items(6) {
-                MovieItemSkeleton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(128.dp)
-                )
-            }
-        } else {
-            items(uiState.movies, key = { movie -> movie.imdbID }) { movie ->
-                val isFavorite = favoriteMap.containsKey(movie.imdbID)
-                MovieItem(
-                    movie = movie,
-                    navController = navController,
-                    isFavorite = isFavorite,
-                    onToggleFavorite = { favoriteViewModel.toggleFavorite(movie) },
-                    imageLoader = imageLoader
-                )
-            }
-        }
+        LazyColumn(
+            state = listState,
+            contentPadding = PaddingValues(top = 12.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
 
-        if (uiState.isPaginating) {
-            items(2) {
-                MovieItemSkeleton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(128.dp)
-                )
+            if (movies.isEmpty() && isLoading) {
+                items(6) {
+                    MovieItemSkeleton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(128.dp)
+                    )
+                }
+            } else {
+                items(movies, key = { movie -> movie.imdbID }) { movie ->
+                    val isFavorite = favoriteMap.containsKey(movie.imdbID)
+                    MovieItem(
+                        movie = movie,
+                        navController = navController,
+                        isFavorite = isFavorite,
+                        onToggleFavorite = { favoriteViewModel.toggleFavorite(movie) },
+                        imageLoader = imageLoader
+                    )
+                }
             }
-        }
 
-        if (uiState.noMoreData) {
-            item {
-                NoMoreDataFooter()
+            if (isPaginating) {
+                items(2) {
+                    MovieItemSkeleton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(128.dp)
+                    )
+                }
+            }
+
+            if (noMoreData) {
+                item {
+                    NoMoreDataFooter()
+                }
             }
         }
     }

@@ -6,11 +6,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavHostController
 
 @Composable
-fun TabScaffoldScreen() {
-    val navController = rememberNavController()
+fun TabScaffoldScreen(navController: NavHostController) {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     val homeListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     val favoriteListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }

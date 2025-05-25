@@ -20,7 +20,7 @@ fun MainNavigation() {
             SplashScreen(navController)
         }
         composable(Screen.Main.route) {
-            TabScaffoldScreen()
+            TabScaffoldScreen(navController)
         }
         composable(Screen.MovieDetail.route) { backStackEntry ->
             val imdbID = backStackEntry.arguments?.getString("imdbID") ?: ""

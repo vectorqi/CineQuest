@@ -13,9 +13,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.vector.omdbapp.ui.navigation.MainNavigation
 import com.vector.omdbapp.ui.navigation.Screen
 
 /**
@@ -24,8 +23,7 @@ import com.vector.omdbapp.ui.navigation.Screen
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CineQuestAppScreen() {
-    val navController = rememberNavController()
+fun CineQuestAppScreen(navController: NavHostController) {
 
     // Track current route from NavController
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -44,9 +42,6 @@ fun CineQuestAppScreen() {
     val favoriteListState = rememberSaveable(saver = LazyListState.Saver) {
         LazyListState()
     }
-        // Always render navigation graph
-        MainNavigation(navController = navController)
-
         // Show tab layout only on main route (not on splash/detail/poster)
         if (showTabUI) {
             TabScreen(

@@ -79,7 +79,6 @@ fun MovieList(
     }
 
     if (showSearchHint) {
-        Log.d("MovieList", "SearchHintState 显示了")
         SearchHintState()
     }else {
 

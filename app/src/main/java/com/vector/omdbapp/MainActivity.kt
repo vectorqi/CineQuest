@@ -11,7 +11,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.vector.omdbapp.ui.navigation.MainNavigation
 import com.vector.omdbapp.ui.theme.APPTheme
@@ -38,7 +37,6 @@ class MainActivity : ComponentActivity() {
             ) {
                 val context = applicationContext
                 val imageLoader = remember { provideGlobalImageLoader(context) }
-                val navController = rememberNavController()
 
                 val systemUiController = rememberSystemUiController()
                 val backgroundColor = MaterialTheme.colorScheme.background
@@ -57,7 +55,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 CompositionLocalProvider(LocalAppImageLoader provides imageLoader) {
-                    MainNavigation(navController)
+                    MainNavigation()
                 }
             }
         }

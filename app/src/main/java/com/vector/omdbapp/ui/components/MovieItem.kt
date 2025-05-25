@@ -1,5 +1,6 @@
 package com.vector.omdbapp.ui.components
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -64,6 +65,8 @@ fun MovieItem(
             .padding(horizontal = 16.dp, vertical = 6.dp)
             .fillMaxWidth()
             .clickable {
+                Log.d("navController", "navController="+navController)
+                Log.d("movie", "movie="+movie)
                 navController.navigate(Screen.MovieDetail.createRoute(movie.imdbID))
             }
             .animateContentSize(),

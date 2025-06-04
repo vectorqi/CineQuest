@@ -54,7 +54,6 @@ class MovieViewModel @Inject constructor(
     val noMoreData: StateFlow<Boolean> = _noMoreData
 
     private val _totalResults = MutableStateFlow(0)
-    val totalResults: StateFlow<Int> = _totalResults
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage

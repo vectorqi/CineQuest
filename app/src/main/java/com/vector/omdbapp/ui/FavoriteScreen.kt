@@ -124,16 +124,16 @@ fun FavoriteEmptyView(onBrowseClick: () -> Unit){
     ) {
         Icon(
             imageVector = Icons.Default.FavoriteBorder,
-            contentDescription = null,
-            modifier = Modifier.run { size(64.dp) },
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
+            contentDescription = stringResource(R.string.favorite_hint_icon_desc),
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = stringResource(R.string.no_favorite_movies),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )

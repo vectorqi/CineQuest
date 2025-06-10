@@ -16,6 +16,7 @@
     <string name="no_favorite_movies">You have no favorite movies yet.</string>
     <string name="tab_home">Home</string>
     <string name="tab_favorites">Favorites</string>
+    <string name="favorite_hint_icon_desc">Favorites icon</string>
 
     <!-- Content Descriptions -->
     <string name="icon_favor_desc">Add to favorites</string>

@@ -3,7 +3,13 @@
 **CineQuest** is a modern movie search and discovery Android app built with Jetpack Compose and Material 3, following Android's latest best practices.
 
 ---
+## 🎬 Demo Video
 
+<video width="100%" controls>
+  <source src="assets/demo.mp4" type="video/mp4">
+</video>
+
+---
 ## 📱 Screenshots(Light and Dark Mode full support)
 | Home | Details | Favorites | Shimmer Skeleton | Error Handling |
 |:----:|:-------:|:---------:|:--------------:|:--------------:|

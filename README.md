@@ -5,9 +5,7 @@
 ---
 ## 🎬 Demo Video
 
-<video width="100%" controls>
-  <source src="assets/demo.mp4" type="video/mp4">
-</video>
+[![Watch the video](https://img.youtube.com/vi/ZHZ93lPz-8E/hqdefault.jpg)](https://youtu.be/ZHZ93lPz-8E)
 
 ---
 ## 📱 Screenshots(Light and Dark Mode full support)

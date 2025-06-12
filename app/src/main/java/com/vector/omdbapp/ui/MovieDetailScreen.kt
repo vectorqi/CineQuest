@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -44,7 +45,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import coil.request.ImageRequest
 import com.vector.omdbapp.R
 import com.vector.omdbapp.ui.components.ErrorState
@@ -125,11 +127,9 @@ fun MovieDetailScreen(
                             .verticalScroll(rememberScrollState())
                     ) {
                         // Poster image with clickable navigation to zoom view
-                        AsyncImage(
+                        SubcomposeAsyncImage(
                             model = ImageRequest.Builder(context)
                                 .data(movie.posterUrl)
-                                .placeholder(R.drawable.loading)
-                                .error(R.drawable.error)
                                 .crossfade(true)
                                 .build(),
                             contentDescription = stringResource(R.string.poster_desc),
@@ -139,7 +139,22 @@ fun MovieDetailScreen(
                                 .clickable {
                                     val encodedUrl = Uri.encode(movie.posterUrl)
                                     navController.navigate(Screen.Poster.createRoute(encodedUrl))
-                                }
+                                },
+                            loading = {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(320.dp)
+                                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                                )
+                            },
+                            success = {
+                                SubcomposeAsyncImageContent(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentHeight()
+                                )
+                            }
                         )
                         Text(
                             text = movie.title,
